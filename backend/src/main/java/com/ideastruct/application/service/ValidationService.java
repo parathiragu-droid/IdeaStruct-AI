@@ -15,6 +15,7 @@ import java.time.Instant;
 import java.util.List;
 
 @Service
+@SuppressWarnings("null")
 public class ValidationService {
 
     private static final Logger log = LoggerFactory.getLogger(ValidationService.class);

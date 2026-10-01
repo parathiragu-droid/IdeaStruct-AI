@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Set;
 
 @Service
+@SuppressWarnings("null")
 public class BlueprintService {
 
     private static final Logger log = LoggerFactory.getLogger(BlueprintService.class);
@@ -268,8 +269,7 @@ public class BlueprintService {
             bp = new LinkedHashMap<>(input);
         }
 
-        boolean hasExplicitOverride = typeOverride != null && !typeOverride.isBlank() && !"AUTO".equalsIgnoreCase(typeOverride);
-        if (hasExplicitOverride) {
+        if (typeOverride != null && !typeOverride.isBlank() && !"AUTO".equalsIgnoreCase(typeOverride)) {
             String upper = typeOverride.toUpperCase(java.util.Locale.ROOT);
             bp.put("projectType", upper);
             Map<String, Object> cl = new LinkedHashMap<>();

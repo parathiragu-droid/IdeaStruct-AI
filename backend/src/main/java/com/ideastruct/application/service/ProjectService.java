@@ -19,6 +19,7 @@ import java.time.Instant;
 import java.util.HexFormat;
 
 @Service
+@SuppressWarnings("null")
 public class ProjectService {
 
     private final ProjectRepository projectRepository;

@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+@SuppressWarnings("null")
 class HealthControllerTest {
 
     @Test
@@ -24,12 +25,13 @@ class HealthControllerTest {
         ResponseEntity<Map<String, Object>> response = controller.checkHealth();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals("RUNNING", response.getBody().get("backend"));
-        assertEquals("UP", response.getBody().get("status"));
+        Map<String, Object> body = response.getBody();
+        assertNotNull(body);
+        assertEquals("RUNNING", body.get("backend"));
+        assertEquals("UP", body.get("status"));
 
         @SuppressWarnings("unchecked")
-        Map<String, Object> db = (Map<String, Object>) response.getBody().get("database");
+        Map<String, Object> db = (Map<String, Object>) body.get("database");
         assertNotNull(db);
         assertEquals("UP", db.get("status"));
         assertEquals("ideastruct_ai", db.get("databaseName"));
@@ -45,12 +47,13 @@ class HealthControllerTest {
         ResponseEntity<Map<String, Object>> response = controller.checkHealth();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals("RUNNING", response.getBody().get("backend"));
-        assertEquals("DEGRADED", response.getBody().get("status"));
+        Map<String, Object> body = response.getBody();
+        assertNotNull(body);
+        assertEquals("RUNNING", body.get("backend"));
+        assertEquals("DEGRADED", body.get("status"));
 
         @SuppressWarnings("unchecked")
-        Map<String, Object> db = (Map<String, Object>) response.getBody().get("database");
+        Map<String, Object> db = (Map<String, Object>) body.get("database");
         assertNotNull(db);
         assertEquals("DOWN", db.get("status"));
         assertTrue(db.get("error").toString().contains("Connection timed out"));
