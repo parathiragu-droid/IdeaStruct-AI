@@ -24,6 +24,7 @@ public class WebConfig implements WebMvcConfigurer {
         List<String> origins = new ArrayList<>();
         origins.add("http://localhost:5173");
         origins.add("http://127.0.0.1:5173");
+        origins.add("https://idea-struct-ai.vercel.app");
 
         if (configuredOrigins != null && !configuredOrigins.isBlank()) {
             for (String origin : configuredOrigins.split(",")) {
