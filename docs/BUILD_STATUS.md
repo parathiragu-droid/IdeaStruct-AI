@@ -1282,3 +1282,37 @@ IdeaStruct AI was extended from a software-only planner to an enterprise-grade e
   - Uncaught Fatal Console Errors: 0.
 - **Regression Suites:** `verify_phase6_diagram.js` (PASSED), `verify_phase7_validation.js` (PASSED), `verify_e2e_journeys.js` (42/42 assertions PASSED).
 - **Linter & Build:** `oxlint` (0 errors), `npm run build` (built in 925ms with 0 errors).
+
+---
+
+### PHASE 8: Production Deployment Preparation & Audit
+
+#### PHASE 8A: Pre-Deployment Audit
+- **Backend Tests:** Maven wrapper test suite passed (`89 / 89` tests green, `BUILD SUCCESS`).
+- **Frontend Tests:** Complete 16-suite test runner passed (`16 / 16` test suites passed).
+- **Frontend Linter & Build:** `oxlint` clean with 0 errors, `npm run build` clean production distribution.
+
+#### PHASE 8B: Secret Safety Audit
+- **Frontend Assets & Source:** Verified zero instances of `GEMINI_API_KEY`, `VITE_GEMINI`, `AIza`, or MongoDB credentials.
+- **Backend Secrets:** Gemini key and MongoDB credentials read exclusively from environment variables (`GEMINI_API_KEY`, `MONGODB_URI`).
+- **Git Tracking:** Verified `.env` and secret files are excluded by `.gitignore`.
+
+#### PHASE 8C: MongoDB Atlas Configuration
+- Prepared Atlas cluster configuration, network access rules (`0.0.0.0/0`), and SRV connection strings.
+- Backend `application.properties` updated to consume `MONGODB_URI` environment variable with local fallback.
+
+#### PHASE 8D: Backend Railway Production Configuration
+- Dynamic port binding configured via `server.port=${PORT:8080}` in `application.properties`.
+- Multi-stage production `backend/Dockerfile` with non-root security user created.
+- `backend/railway.json` schema and healthcheck configuration created.
+
+#### PHASE 8E: Production CORS Configuration
+- `WebConfig.java` updated to dynamically read allowed origins from `FRONTEND_URL` and `cors.allowed-origins` while preserving local dev origins (`http://localhost:5173`, `http://127.0.0.1:5173`). No unrestricted wildcards.
+
+#### PHASE 8H & 8I: Frontend API & VERCEL SPA Routing
+- `frontend/src/services/api.js` updated to dynamically resolve `import.meta.env.VITE_API_BASE_URL` with fallback to `/api`.
+- `frontend/vercel.json` created with wildcard SPA rewrites to `/index.html` preventing 404s on page refresh.
+
+#### PHASE 8S: Deployment Documentation
+- `docs/DEPLOYMENT.md` created with step-by-step setup guide for Atlas, Railway, and Vercel.
+- `.env.example` updated with production variable templates.

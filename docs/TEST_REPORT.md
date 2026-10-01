@@ -269,3 +269,46 @@ ALL VERIFICATION CHECKS PASSED SUCCESSFULLY!
 - **Zero Eval:** Codebase search confirmed 0 instances of `eval()`, 0 instances of `new Function()`, and 0 arbitrary HTML/script execution.
 - **Parametric 3D Fallback:** Graceful fallback notice rendered if WebGL context creation fails.
 - **Deterministic Diagramming:** Wiring diagrams are generated directly from `hardware.components` and `hardware.connections` via SVG elements.
+
+---
+
+## 5. Phase 8 Pre-Deployment Audit & Secret Safety Verification
+
+### 5.1 Pre-Deployment Automated Test Execution
+
+```
+Backend Test Suite (Maven Wrapper):
+  Command: .\mvnw.cmd test
+  Result: Tests run: 89, Failures: 0, Errors: 0, Skipped: 0
+  Build Status: BUILD SUCCESS
+  Execution Time: 11.97s
+
+Frontend Test Suite (Node.js Test Runner):
+  Command: npm test
+  Total Test Suites: 16 / 16 PASSED
+  Failed: 0 / 16
+  Status: ALL FRONTEND VERIFICATION TESTS PASSED!
+
+Frontend Linter (oxlint):
+  Command: npm run lint
+  Result: 0 errors
+
+Frontend Production Build (Vite 8):
+  Command: npm run build
+  Result: Built in 863ms with 0 errors
+```
+
+### 5.2 Secret Exposure Scan Results
+
+- **Frontend Codebase (`frontend/src`)**:
+  - `GEMINI_API_KEY`: 0 secrets exposed (only user-facing configuration guides/labels).
+  - `VITE_GEMINI`: 0 instances.
+  - `AIza`: 0 instances.
+  - MongoDB connection strings / passwords: 0 instances.
+- **Backend Codebase (`backend/src`)**:
+  - Reads `GEMINI_API_KEY` exclusively from environment variables (`${GEMINI_API_KEY:}`).
+  - Reads `MONGODB_URI` exclusively from environment variables (`${MONGODB_URI:...}`).
+  - Dynamic `PORT` configuration (`${PORT:8080}`) for Railway cloud compatibility.
+- **Repository Safety**:
+  - `.env` and secret files excluded by `.gitignore`.
+  - Only sanitized `.env.example` committed.

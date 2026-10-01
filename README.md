@@ -185,8 +185,24 @@ node scripts/verification/verify_e2e_journeys.js
 
 ---
 
-## 9. DOCUMENTATION INDEX
+---
 
+## 9. PRODUCTION DEPLOYMENT
+
+IdeaStruct AI is architected for production deployment on:
+- **Frontend**: [Vercel](https://vercel.com/) (React + Vite SPA with client-side routing)
+- **Backend**: [Railway](https://railway.com/) (Spring Boot 3.4.3 Docker container with dynamic `$PORT`)
+- **Database**: [MongoDB Atlas](https://cloud.mongodb.com/) (Cloud M0+ replica set)
+- **AI Provider**: Google Gemini API via backend proxy only
+
+For step-by-step setup, environment variable configuration, and deployment procedures, see:
+👉 **[`docs/DEPLOYMENT.md`](./docs/DEPLOYMENT.md)**
+
+---
+
+## 10. DOCUMENTATION INDEX
+
+- [`docs/DEPLOYMENT.md`](./docs/DEPLOYMENT.md): Production deployment guide for Vercel, Railway, and MongoDB Atlas.
 - [`docs/USER_GUIDE.md`](./docs/USER_GUIDE.md): Complete guide for Software, Hardware, and Hybrid planning.
 - [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md): System architecture, 3D viewer, wiring engine, and validation rules.
 - [`docs/PROJECT_CONTEXT.md`](./docs/PROJECT_CONTEXT.md): Pinned versions, canonical schema, and boundary guidelines.
