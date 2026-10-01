@@ -1,0 +1,673 @@
+{
+  "schemaVersion": "2.0",
+  "projectType": "HARDWARE",
+  "classification": {
+    "type": "HARDWARE",
+    "reason": "Project primarily focuses on physical circuit design, embedded controller selection, sensors/actuators, and wiring connections.",
+    "confidence": "HIGH"
+  },
+  "overview": {
+    "projectName": "PulseTrack — Biometric Heart Rate & SpO2 Health Wearable Wristband",
+    "summary": "PulseTrack is an ultra-compact ergonomic wrist wearable designed for real-time photoplethysmography (PPG) pulse oximetry, skin temperature tracking, and haptic biometric alert feedback.",
+    "problemStatement": "Patients and fitness users needing continuous cardiovascular vitals monitoring are hindered by bulky medical equipment and inconvenient wired fingertip sensors.",
+    "targetUsers": [
+      "Cardiovascular Wellness Patients",
+      "Endurance Athletes & Runners",
+      "Elderly Care Supervisors"
+    ],
+    "goals": [
+      "Continuously measure capillary pulse rate and blood oxygen saturation (SpO2)",
+      "Vibrate subtly on the wrist when arrhythmia or hypoxic thresholds are detected",
+      "Provide a crisp circular color readout with 36-hour single-charge battery autonomy"
+    ],
+    "scope": [
+      "MAX30102 integrated optical pulse oximeter with skin contact lens",
+      "NTC precision skin thermistor for surface temperature tracking",
+      "ESP32-C3 ultra-low-power RISC-V microcontroller with BLE 5.0",
+      "0.96 inch circular AMOLED color display",
+      "Coin-type ERM haptic vibration motor",
+      "3.7V 300mAh LiPo battery with magnetic pogo-pin charging"
+    ],
+    "outOfScope": [
+      "12-lead clinical ECG diagnostics",
+      "Cellular 5G eSIM standalone calling",
+      "Invasive blood pressure arterial monitoring"
+    ]
+  },
+  "features": [
+    {
+      "id": "feature-ppg-sensing",
+      "name": "Optical Photoplethysmography Pulse & SpO2 Sensing",
+      "description": "Directs red and infrared optical wavelengths through skin capillaries to calculate heart rate and blood oxygen saturation.",
+      "priority": "HIGH",
+      "roleIds": [
+        "role-patient-user"
+      ],
+      "needsApi": false,
+      "needsUi": false,
+      "needsPersistence": false
+    },
+    {
+      "id": "feature-skin-temp",
+      "name": "Continuous Epidermal Temperature Tracking",
+      "description": "Measures localized skin temperature using a calibrated precision thermistor located on the bottom case plate.",
+      "priority": "MEDIUM",
+      "roleIds": [
+        "role-patient-user"
+      ],
+      "needsApi": false,
+      "needsUi": false,
+      "needsPersistence": false
+    },
+    {
+      "id": "feature-haptic-alert",
+      "name": "Silent Haptic Arrhythmia Vibration Feedback",
+      "description": "Triggers discrete pattern pulses from an internal ERM coin motor when heart rate exceeds customized threshold limits.",
+      "priority": "HIGH",
+      "roleIds": [
+        "role-patient-user"
+      ],
+      "needsApi": false,
+      "needsUi": false,
+      "needsPersistence": false
+    },
+    {
+      "id": "feature-circular-display",
+      "name": "Circular AMOLED Vitals Watchface",
+      "description": "Renders live pulse BPM, SpO2 percentage, battery meter, and step counter on a high-contrast circular display.",
+      "priority": "HIGH",
+      "roleIds": [
+        "role-patient-user"
+      ],
+      "needsApi": false,
+      "needsUi": false,
+      "needsPersistence": false
+    }
+  ],
+  "roles": [
+    {
+      "id": "role-patient-user",
+      "name": "Wearable User",
+      "description": "Wears wristband during daily activities and inspects real-time vitals and vibration alerts.",
+      "permissions": [
+        "view_live_vitals",
+        "dismiss_haptic_alert",
+        "pair_bluetooth_phone"
+      ],
+      "interactive": true
+    }
+  ],
+  "requirements": [
+    {
+      "id": "req-ppg-accuracy",
+      "type": "FUNCTIONAL",
+      "description": "System shall sample PPG sensor at 100Hz with digital noise reduction to filter motion artifacts.",
+      "featureIds": [
+        "feature-ppg-sensing"
+      ],
+      "acceptanceCriteria": [
+        "Heart rate accuracy within +/- 3 BPM compared to ECG baseline",
+        "SpO2 accuracy within +/- 2%"
+      ],
+      "source": "USER_STATED"
+    },
+    {
+      "id": "req-battery-life",
+      "type": "NON_FUNCTIONAL",
+      "description": "Device must operate for a minimum of 36 continuous hours on a single 300mAh battery charge.",
+      "featureIds": [
+        "feature-circular-display"
+      ],
+      "acceptanceCriteria": [
+        "Deep-sleep current draw under 25uA between display wake-ups",
+        "Full recharge in under 60 minutes"
+      ],
+      "source": "USER_STATED"
+    },
+    {
+      "id": "req-skin-safety",
+      "type": "NON_FUNCTIONAL",
+      "description": "Enclosure bottom plate and optical window must be biocompatible and hypoallergenic.",
+      "featureIds": [
+        "feature-skin-temp"
+      ],
+      "acceptanceCriteria": [
+        "ISO 10993 cytotoxicity and skin irritation compliance",
+        "IP68 water immersion rating"
+      ],
+      "source": "AI_ASSUMED"
+    }
+  ],
+  "estimates": {
+    "difficulty": "EASY",
+    "estimatedDuration": "3–5 weeks",
+    "recommendedTeamSize": 2,
+    "teamRoles": [
+      {
+        "role": "Hardware Electronics Engineer",
+        "count": 1,
+        "responsibility": "Schematic design, breadboard circuit assembly, component sourcing, and enclosure modeling"
+      },
+      {
+        "role": "Embedded Firmware Engineer",
+        "count": 1,
+        "responsibility": "ESP32 C++/Arduino firmware, ADC filtering algorithms, and I2C display drivers"
+      }
+    ],
+    "estimatedCost": {
+      "currency": "USD",
+      "minimum": 45,
+      "maximum": 120,
+      "basis": "Prototyping components, breadboard, custom 3D printed enclosure, and 5V power adapter.",
+      "disclaimer": "Approximate estimate based on the supplied requirements."
+    },
+    "resources": [
+      {
+        "name": "Electronics Prototyping Bench",
+        "type": "HARDWARE",
+        "purpose": "Soldering, breadboarding, and digital multimeter testing"
+      },
+      {
+        "name": "3D Printer (PETG Filament)",
+        "type": "HARDWARE",
+        "purpose": "Fabricating ventilated enclosure chassis"
+      }
+    ]
+  },
+  "software": {
+    "applicable": false
+  },
+  "hardware": {
+    "applicable": true,
+    "workingPrinciple": "MAX30102 optical sensor directs alternating 660nm red and 880nm infrared light into capillary bed tissue. Photodiode voltage fluctuations are sampled via I2C by the ESP32-C3 RISC-V core. If BPM or oxygen saturation violates safety boundaries, a miniature coin vibration motor pulses while the circular AMOLED display turns amber/red.",
+    "components": [
+      {
+        "id": "comp-esp32c3",
+        "name": "ESP32-C3 Ultra-Low-Power BLE Micro Module",
+        "category": "MICROCONTROLLER",
+        "purpose": "Single-core 160MHz RISC-V processor with integrated Bluetooth Low Energy 5.0 and hardware cryptographic engine",
+        "quantity": 1,
+        "specification": "ESP32-C3-WROOM-02, 160MHz 32-bit RISC-V, 400KB SRAM, 4MB Flash, compact 18x14mm form-factor",
+        "alternatives": [
+          "nRF52840 BLE SoC",
+          "RP2040 Zero"
+        ],
+        "estimatedUnitCost": 3.2,
+        "estimatedTotalCost": 3.2
+      },
+      {
+        "id": "comp-max30102",
+        "name": "MAX30102 Optical PPG Heart Rate & SpO2 Sensor",
+        "category": "SENSOR",
+        "purpose": "Skin-contact photoplethysmography sensor measuring blood volumetric absorption peaks",
+        "quantity": 1,
+        "specification": "Dual LED (660nm / 880nm), integrated photodetector, 18-bit ADC, I2C interface, 1.8V logic",
+        "alternatives": [
+          "MAX30100",
+          "Pulse Sensor Amped Optical"
+        ],
+        "estimatedUnitCost": 4.8,
+        "estimatedTotalCost": 4.8
+      },
+      {
+        "id": "comp-skin-temp",
+        "name": "NTC Precision Medical Skin Thermistor",
+        "category": "SENSOR",
+        "purpose": "Localized epidermal surface temperature sensor embedded in bottom casing",
+        "quantity": 1,
+        "specification": "10k ohm @ 25C, 1% tolerance, B-value 3950K, stainless disc contact cap",
+        "alternatives": [
+          "TMP117 High-Precision Digital Sensor",
+          "MLX90614 Contactless IR"
+        ],
+        "estimatedUnitCost": 1.2,
+        "estimatedTotalCost": 1.2
+      },
+      {
+        "id": "comp-vibe-motor",
+        "name": "ERM Coin-Type Haptic Micro-Vibration Motor",
+        "category": "ACTUATOR",
+        "purpose": "Silent tactile wrist notification for threshold alerts and button tap feedback",
+        "quantity": 1,
+        "specification": "10mm diameter x 3mm height, 3V DC, 75mA, 12,000 RPM eccentric rotating mass",
+        "alternatives": [
+          "Linear Resonant Actuator (LRA)",
+          "Piezo Haptic Disc"
+        ],
+        "estimatedUnitCost": 1.5,
+        "estimatedTotalCost": 1.5
+      },
+      {
+        "id": "comp-oled-round",
+        "name": "0.96-Inch Circular AMOLED Color Display",
+        "category": "DISPLAY",
+        "purpose": "Ultra-crisp circular vitals dashboard showing live pulse BPM and oxygen saturation",
+        "quantity": 1,
+        "specification": "240x240 pixel resolution, GC9A01 SPI driver, 65k full color, 300 nits brightness",
+        "alternatives": [
+          "1.28 inch Round LCD",
+          "0.96 inch Square Monochrome OLED"
+        ],
+        "estimatedUnitCost": 5.6,
+        "estimatedTotalCost": 5.6
+      },
+      {
+        "id": "comp-lipo",
+        "name": "3.7V 300mAh Miniature Rechargeable LiPo Battery",
+        "category": "POWER",
+        "purpose": "Lightweight internal battery providing 36 hours of continuous biometric tracking",
+        "quantity": 1,
+        "specification": "3.7V nominal, 300mAh, integrated PCM over-discharge/short-circuit protection, 502030 pouch",
+        "alternatives": [
+          "LIR2032 Coin Rechargeable Cell",
+          "400mAh LiPo Cell"
+        ],
+        "estimatedUnitCost": 3.8,
+        "estimatedTotalCost": 3.8
+      },
+      {
+        "id": "comp-power",
+        "name": "Magnetic 2-Pin Pogo USB Charging Port & TP4056 IC",
+        "category": "POWER",
+        "purpose": "Waterproof magnetic charging interface with linear constant-current LiPo management",
+        "quantity": 1,
+        "specification": "Magnetic keyed pogo-pins, TP4056 200mA charge limiter, reverse polarity protection",
+        "alternatives": [
+          "Qi Wireless Inductive Charging Coil",
+          "Sealed USB-C Port"
+        ],
+        "estimatedUnitCost": 2.1,
+        "estimatedTotalCost": 2.1
+      }
+    ],
+    "controllers": [
+      "ESP32-C3 Ultra-Low-Power RISC-V 160MHz"
+    ],
+    "sensors": [
+      "MAX30102 PPG Optical Heart Rate Sensor",
+      "NTC Skin Surface Thermistor"
+    ],
+    "actuators": [
+      "ERM Coin Micro-Vibration Motor"
+    ],
+    "communicationModules": [
+      "Bluetooth Low Energy (BLE 5.0) Nordic Protocol"
+    ],
+    "powerRequirements": {
+      "voltageRail": "3.7V LiPo rail stepped down to 3.3V system logic and 1.8V optical sensor VDD",
+      "powerSource": "Internal 3.7V 300mAh LiPo battery with magnetic USB charging",
+      "estimatedCurrentDraw": "15mA active display; 45mA during vibration alert; 45uA background sleep"
+    },
+    "pinConnections": [
+      "ESP32-C3 GPIO8 (SDA) <-> MAX30102 SDA Pin",
+      "ESP32-C3 GPIO9 (SCL) <-> MAX30102 SCL Pin",
+      "ESP32-C3 GPIO3 (INT) <-> MAX30102 Interrupt Pin",
+      "ESP32-C3 GPIO5 (PWM) <-> Vibration Motor Driver Transistor Gate",
+      "ESP32-C3 GPIO0 (ADC0) <-> Skin Thermistor Divider Pin",
+      "ESP32-C3 SPI (MOSI/SCLK/CS) <-> Circular AMOLED Display",
+      "LiPo Battery (+) <-> TP4056 BAT+ Pin and System Power Switch"
+    ],
+    "connections": [
+      {
+        "id": "conn-max-sda",
+        "fromComponentId": "comp-esp32c3",
+        "fromPin": "GPIO8",
+        "toComponentId": "comp-max30102",
+        "toPin": "SDA",
+        "signalType": "I2C_DATA",
+        "voltage": "3.3V",
+        "purpose": "I2C Serial Data line for optical PPG sensor"
+      },
+      {
+        "id": "conn-max-scl",
+        "fromComponentId": "comp-esp32c3",
+        "fromPin": "GPIO9",
+        "toComponentId": "comp-max30102",
+        "toPin": "SCL",
+        "signalType": "I2C_CLOCK",
+        "voltage": "3.3V",
+        "purpose": "I2C Serial Clock line for optical sensor"
+      },
+      {
+        "id": "conn-max-int",
+        "fromComponentId": "comp-max30102",
+        "fromPin": "INT",
+        "toComponentId": "comp-esp32c3",
+        "toPin": "GPIO3",
+        "signalType": "DIGITAL_IN",
+        "voltage": "3.3V",
+        "purpose": "Hardware interrupt signaling new sample ready in FIFO"
+      },
+      {
+        "id": "conn-vibe-pwm",
+        "fromComponentId": "comp-esp32c3",
+        "fromPin": "GPIO5",
+        "toComponentId": "comp-vibe-motor",
+        "toPin": "IN",
+        "signalType": "PWM",
+        "voltage": "3.3V",
+        "purpose": "Pulse-width modulated drive signal for haptic alerts"
+      },
+      {
+        "id": "conn-temp-analog",
+        "fromComponentId": "comp-skin-temp",
+        "fromPin": "VOUT",
+        "toComponentId": "comp-esp32c3",
+        "toPin": "GPIO0",
+        "signalType": "ANALOG",
+        "voltage": "0-3.3V",
+        "purpose": "Epidermal temperature voltage divider reading"
+      },
+      {
+        "id": "conn-oled-spi",
+        "fromComponentId": "comp-esp32c3",
+        "fromPin": "SPI_MOSI",
+        "toComponentId": "comp-oled-round",
+        "toPin": "MOSI",
+        "signalType": "SPI",
+        "voltage": "3.3V",
+        "purpose": "High-speed SPI frame transfer for circular display"
+      },
+      {
+        "id": "conn-battery-pwr",
+        "fromComponentId": "comp-lipo",
+        "fromPin": "BAT+",
+        "toComponentId": "comp-esp32c3",
+        "toPin": "VIN",
+        "signalType": "POWER",
+        "voltage": "3.7V",
+        "purpose": "LiPo battery power delivery to regulator"
+      },
+      {
+        "id": "conn-charger-pwr",
+        "fromComponentId": "comp-power",
+        "fromPin": "VBUS",
+        "toComponentId": "comp-lipo",
+        "toPin": "CHG_IN",
+        "signalType": "POWER",
+        "voltage": "5.0V",
+        "purpose": "Magnetic charging current from external USB"
+      }
+    ],
+    "enclosure": {
+      "type": "WEARABLE_CASE",
+      "material": "Ergonomic Polycarbonate Chassis with Hypoallergenic Fluororubber Wrist Straps",
+      "dimensions": "52mm x 44mm x 16mm",
+      "protectionRating": "IP68 sweat & splash resistant"
+    },
+    "enclosureConcept": {
+      "type": "WEARABLE_CASE",
+      "name": "Ergonomic Wristband Enclosure",
+      "material": "Ergonomic Polycarbonate Chassis with Hypoallergenic Fluororubber Wrist Straps",
+      "dimensions": "52mm x 44mm x 16mm",
+      "protectionRating": "IP68 sweat & splash resistant"
+    },
+    "threeDModel": {
+      "generated": true,
+      "enclosure": {
+        "type": "WEARABLE_CASE",
+        "dimensions": [
+          52,
+          16,
+          44
+        ],
+        "color": "#0f172a",
+        "opacity": 0.4,
+        "wireframe": false
+      },
+      "components": [
+        {
+          "componentId": "comp-esp32c3",
+          "primitiveType": "BOARD",
+          "dimensions": [
+            26,
+            4,
+            20
+          ],
+          "position": [
+            0,
+            4,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "color": "#047857",
+          "label": "ESP32-C3 BLE Micro Module"
+        },
+        {
+          "componentId": "comp-oled-round",
+          "primitiveType": "DISPLAY_PANEL",
+          "dimensions": [
+            32,
+            4,
+            32
+          ],
+          "position": [
+            0,
+            9,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "color": "#38bdf8",
+          "label": "0.96-Inch Circular AMOLED Display"
+        },
+        {
+          "componentId": "comp-max30102",
+          "primitiveType": "SENSOR_MODULE",
+          "dimensions": [
+            16,
+            6,
+            16
+          ],
+          "position": [
+            0,
+            -4,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "color": "#ef4444",
+          "label": "MAX30102 Optical Pulse Sensor (Underside)"
+        },
+        {
+          "componentId": "comp-vibe-motor",
+          "primitiveType": "CYLINDER",
+          "dimensions": [
+            12,
+            6,
+            12
+          ],
+          "position": [
+            15,
+            4,
+            8
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "color": "#64748b",
+          "label": "Haptic Coin Vibration Motor"
+        },
+        {
+          "componentId": "comp-skin-temp",
+          "primitiveType": "SENSOR_MODULE",
+          "dimensions": [
+            10,
+            5,
+            10
+          ],
+          "position": [
+            -14,
+            -3,
+            8
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "color": "#10b981",
+          "label": "Medical Skin Thermistor"
+        },
+        {
+          "componentId": "comp-lipo",
+          "primitiveType": "BOX",
+          "dimensions": [
+            24,
+            5,
+            20
+          ],
+          "position": [
+            0,
+            1,
+            -10
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "color": "#94a3b8",
+          "label": "3.7V 300mAh LiPo Cell"
+        },
+        {
+          "componentId": "comp-power",
+          "primitiveType": "CONNECTOR",
+          "dimensions": [
+            14,
+            5,
+            8
+          ],
+          "position": [
+            -20,
+            4,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "color": "#f59e0b",
+          "label": "Magnetic Pogo Charger"
+        }
+      ]
+    }
+  },
+  "roadmap": [
+    {
+      "id": "phase-biometric-sampling",
+      "title": "Phase 1: Optical PPG & Temperature Sensor Validation",
+      "description": "Validate MAX30102 I2C register configuration and NTC thermistor ADC readout.",
+      "featureIds": [
+        "feature-ppg-sensing",
+        "feature-skin-temp"
+      ],
+      "tasks": [
+        "Interface MAX30102 over I2C with ESP32-C3",
+        "Implement SpO2 and pulse peak detection algorithm",
+        "Calibrate Steinhart-Hart equation for skin thermistor"
+      ],
+      "dependsOnPhaseIds": [],
+      "completionCriteria": [
+        "Accurate pulse BPM and temperature displayed on serial terminal"
+      ]
+    },
+    {
+      "id": "phase-haptics-display",
+      "title": "Phase 2: AMOLED Display & Haptic Alert Feedback",
+      "description": "Implement circular watchface graphics and silent ERM motor vibration patterns.",
+      "featureIds": [
+        "feature-haptic-alert",
+        "feature-circular-display"
+      ],
+      "tasks": [
+        "Port GC9A01 circular display driver for ESP32-C3",
+        "Design real-time heart rate gauge and battery indicator",
+        "Create PWM vibration patterns for arrhythmia threshold alerts"
+      ],
+      "dependsOnPhaseIds": [
+        "phase-biometric-sampling"
+      ],
+      "completionCriteria": [
+        "Vitals render cleanly on round AMOLED and buzzer/motor vibrates on alert"
+      ]
+    },
+    {
+      "id": "phase-wearable-casing",
+      "title": "Phase 3: Ergonomic Wrist Casing & Battery Management",
+      "description": "Assemble flexible silicone strap, magnetic charging dock, and verify 36-hour autonomy.",
+      "featureIds": [
+        "feature-ppg-sensing",
+        "feature-circular-display"
+      ],
+      "tasks": [
+        "Integrate 300mAh LiPo and MCP73831 charging circuit with pogo pins",
+        "Fit assembly into SLA resin circular case with curved lens",
+        "Measure active vs deep sleep power consumption"
+      ],
+      "dependsOnPhaseIds": [
+        "phase-haptics-display"
+      ],
+      "completionCriteria": [
+        "Continuous 36-hour runtime achieved on single charge cycle"
+      ]
+    }
+  ],
+  "assumptions": [
+    {
+      "id": "asm-wrist-contact",
+      "description": "User maintains snug wrist contact so optical window touches skin without ambient light leakage.",
+      "affectedEntityIds": [
+        "comp-max30102",
+        "feature-ppg-sensing"
+      ],
+      "reason": "PPG sensor accuracy degrades significantly under ambient light interference."
+    }
+  ],
+  "openQuestions": [
+    {
+      "id": "q-charging-dock",
+      "question": "Should magnetic pogo pins or standard USB-C port be used for device charging?",
+      "affectedEntityIds": [
+        "comp-power",
+        "feature-circular-display"
+      ],
+      "whyItMatters": "Affects waterproof seal rating and enclosure thickness."
+    }
+  ],
+  "risks": [
+    {
+      "id": "risk-heater-burnin",
+      "title": "Sensor Drift During Initial Heating",
+      "severity": "MEDIUM",
+      "mitigation": "Include software lockout requiring 24 hours of burn-in heating before saving baseline calibration."
+    },
+    {
+      "id": "risk-silicone-poisoning",
+      "title": "Sensor Poisoning from Aerosols",
+      "severity": "HIGH",
+      "mitigation": "Clearly label enclosure warnings against using silicone adhesives, hairspray, or VOC cleaners near unit."
+    }
+  ],
+  "recommendations": [
+    {
+      "id": "rec-backup-battery",
+      "category": "FUTURE_FEATURE",
+      "title": "LiPo Battery Backup with Charger IC",
+      "description": "Consider adding a single-cell LiPo battery and TP4056 charging IC for 2-hour backup during power outages."
+    }
+  ]
+}

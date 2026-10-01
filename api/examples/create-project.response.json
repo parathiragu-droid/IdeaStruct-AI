@@ -1,0 +1,15 @@
+{
+  "id": "6740a1b2c3d4e5f678901234",
+  "title": "CampusBite — Student Food Ordering",
+  "idea": "An on-demand food pre-ordering and pickup system tailored for university campus dining halls, allowing students to order meals ahead, pay with campus meal points, and track pickup lockers in real-time.",
+  "typeOverride": null,
+  "revision": 1,
+  "createdAt": "2026-09-24T10:00:00Z",
+  "updatedAt": "2026-09-24T10:00:00Z",
+  "blueprint": null,
+  "blueprintBasedOnIdeaHash": null,
+  "blueprintOutdated": false,
+  "generationMetadata": null,
+  "validationIssues": [],
+  "validationCheckedAt": null
+}

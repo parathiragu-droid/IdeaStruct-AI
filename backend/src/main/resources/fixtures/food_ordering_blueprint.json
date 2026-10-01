@@ -1,0 +1,2134 @@
+{
+  "schemaVersion": "2.0",
+  "overview": {
+    "projectName": "CampusBite — Student Campus Food Ordering & Pickup",
+    "summary": "CampusBite is a campus-focused food ordering and pickup platform designed for university students, campus dining halls, and independent food trucks parked on university grounds.",
+    "problemStatement": "During peak breaks between lecture hours, campus dining halls and food trucks experience extreme congestion, resulting in 20-30 minute queues and missed lunches for students.",
+    "targetUsers": [
+      "Undergraduate & Graduate University Students",
+      "Campus Food Vendors & Kitchen Staff",
+      "Campus Dining Services Administrator"
+    ],
+    "goals": [
+      "Reduce student waiting time between classes to under 5 minutes",
+      "Allow kitchen staff to pace preparation using a real-time order queue",
+      "Provide dining administrators real-time visibility into vendor health and sales"
+    ],
+    "scope": [
+      "Student mobile-responsive menu browsing and pre-ordering",
+      "Time-slotted pickup selection",
+      "Vendor kitchen display board with live status transitions",
+      "Automated SMS/app pickup readiness notifications",
+      "Campus administrator vendor compliance auditing"
+    ],
+    "outOfScope": [
+      "Off-campus home delivery courier network",
+      "Integration with external third-party food delivery aggregators (e.g. UberEats)",
+      "Hardware point-of-sale terminal manufacturing"
+    ]
+  },
+  "features": [
+    {
+      "id": "feature-browse-vendors",
+      "name": "Browse Vendors & Daily Menus",
+      "description": "Students can view active campus dining locations, check open hours, browse item categories, and filter by dietary restrictions.",
+      "priority": "HIGH",
+      "roleIds": [
+        "role-student"
+      ],
+      "needsApi": true,
+      "needsUi": true,
+      "needsPersistence": true
+    },
+    {
+      "id": "feature-place-order",
+      "name": "Meal Ordering & Time-slot Reservation",
+      "description": "Select meal items, customize options (e.g. spice level, allergy flags), select pickup window, and submit payment via campus card or card.",
+      "priority": "HIGH",
+      "roleIds": [
+        "role-student"
+      ],
+      "needsApi": true,
+      "needsUi": true,
+      "needsPersistence": true
+    },
+    {
+      "id": "feature-order-status",
+      "name": "Live Order Status Tracking",
+      "description": "Track the preparation stage of placed orders (Received, In Kitchen, Ready for Pickup, Collected) with real-time alerts.",
+      "priority": "HIGH",
+      "roleIds": [
+        "role-student",
+        "role-vendor"
+      ],
+      "needsApi": true,
+      "needsUi": true,
+      "needsPersistence": true
+    },
+    {
+      "id": "feature-menu-management",
+      "name": "Vendor Menu & Kitchen Display",
+      "description": "Kitchen staff can update daily item availability, toggle sold-out items, and advance order statuses from a high-contrast touch screen.",
+      "priority": "HIGH",
+      "roleIds": [
+        "role-vendor"
+      ],
+      "needsApi": true,
+      "needsUi": true,
+      "needsPersistence": true
+    },
+    {
+      "id": "feature-admin-vendor-approval",
+      "name": "Campus Vendor Administration",
+      "description": "Campus administration can approve new dining vendors, audit food safety permits, and review campus dining operational metrics.",
+      "priority": "MEDIUM",
+      "roleIds": [
+        "role-campus-admin"
+      ],
+      "needsApi": true,
+      "needsUi": true,
+      "needsPersistence": true
+    }
+  ],
+  "roles": [
+    {
+      "id": "role-student",
+      "name": "Student",
+      "description": "Enrolled student with valid campus credentials ordering meals on campus.",
+      "permissions": [
+        "browse_vendors",
+        "view_menus",
+        "create_order",
+        "view_own_orders",
+        "submit_feedback"
+      ],
+      "interactive": true
+    },
+    {
+      "id": "role-vendor",
+      "name": "Kitchen Staff / Vendor Operator",
+      "description": "Food stall or cafeteria staff managing menu availability and fulfilling orders.",
+      "permissions": [
+        "manage_menu_items",
+        "view_order_queue",
+        "update_order_status",
+        "view_vendor_reports"
+      ],
+      "interactive": true
+    },
+    {
+      "id": "role-campus-admin",
+      "name": "Campus Dining Administrator",
+      "description": "University official overseeing all dining facilities and vendor contracts.",
+      "permissions": [
+        "approve_vendors",
+        "suspend_vendors",
+        "audit_compliance",
+        "view_system_analytics"
+      ],
+      "interactive": true
+    }
+  ],
+  "requirements": [
+    {
+      "id": "req-student-browse",
+      "type": "FUNCTIONAL",
+      "description": "The system shall list all authorized campus dining locations with opening hours, menu categories, and dietary tags.",
+      "featureIds": [
+        "feature-browse-vendors"
+      ],
+      "acceptanceCriteria": [
+        "Vendor list renders in under 1 second",
+        "Dietary filter filters vegetarian, vegan, and gluten-free items instantly",
+        "Closed vendors are clearly indicated with reopening times"
+      ],
+      "source": "USER_STATED"
+    },
+    {
+      "id": "req-student-order",
+      "type": "FUNCTIONAL",
+      "description": "Students shall be able to place scheduled pre-orders with customized options and payment authorization.",
+      "featureIds": [
+        "feature-place-order"
+      ],
+      "acceptanceCriteria": [
+        "Order submission validates item availability in real time",
+        "Unique order confirmation ID is generated with estimated pickup slot",
+        "Receipt is stored in student order history"
+      ],
+      "source": "USER_STATED"
+    },
+    {
+      "id": "req-order-status-alert",
+      "type": "FUNCTIONAL",
+      "description": "The system shall notify students immediately when their order transitions to 'Ready for Pickup'.",
+      "featureIds": [
+        "feature-order-status"
+      ],
+      "acceptanceCriteria": [
+        "In-app status updates within 2 seconds of vendor action",
+        "Order details show pickup counter number and pickup code"
+      ],
+      "source": "USER_STATED"
+    },
+    {
+      "id": "req-vendor-menu",
+      "type": "FUNCTIONAL",
+      "description": "Vendors shall have a kitchen view allowing 1-click status transitions and instantaneous item 86/sold-out toggling.",
+      "featureIds": [
+        "feature-menu-management"
+      ],
+      "acceptanceCriteria": [
+        "Marking item sold-out immediately disables it from new student carts",
+        "Order queue orders cards by requested pickup time"
+      ],
+      "source": "USER_STATED"
+    },
+    {
+      "id": "req-admin-approval",
+      "type": "FUNCTIONAL",
+      "description": "Administrators shall review vendor applications and approve or suspend campus vending privileges.",
+      "featureIds": [
+        "feature-admin-vendor-approval"
+      ],
+      "acceptanceCriteria": [
+        "Suspended vendors are hidden from student app immediately",
+        "Audit log records administrative actions with timestamp"
+      ],
+      "source": "USER_STATED"
+    },
+    {
+      "id": "req-concurrency-performance",
+      "type": "NON_FUNCTIONAL",
+      "description": "The platform shall support up to 500 concurrent order requests at the 12:00 PM and 1:00 PM class transition peaks.",
+      "featureIds": [
+        "feature-place-order"
+      ],
+      "acceptanceCriteria": [
+        "99th percentile response time for order submission remains under 800ms",
+        "Zero overselling occurs due to race conditions"
+      ],
+      "source": "AI_ASSUMED"
+    }
+  ],
+  "database": {
+    "collections": [
+      {
+        "id": "collection-users",
+        "name": "users",
+        "description": "Stores user profiles including students, vendor operators, and campus admins.",
+        "featureIds": [
+          "feature-browse-vendors",
+          "feature-place-order"
+        ],
+        "fields": [
+          {
+            "name": "_id",
+            "dataType": "ObjectId",
+            "required": true,
+            "unique": true,
+            "description": "Primary key"
+          },
+          {
+            "name": "campusId",
+            "dataType": "String",
+            "required": true,
+            "unique": true,
+            "description": "Student or Staff ID"
+          },
+          {
+            "name": "email",
+            "dataType": "String",
+            "required": true,
+            "unique": true,
+            "description": "Campus institutional email"
+          },
+          {
+            "name": "fullName",
+            "dataType": "String",
+            "required": true,
+            "unique": false,
+            "description": "Display name"
+          },
+          {
+            "name": "role",
+            "dataType": "String",
+            "required": true,
+            "unique": false,
+            "description": "STUDENT, VENDOR, ADMIN"
+          },
+          {
+            "name": "createdAt",
+            "dataType": "Date",
+            "required": true,
+            "unique": false,
+            "description": "Account registration timestamp"
+          }
+        ],
+        "indexes": [
+          "campusId_1",
+          "email_1",
+          "role_1"
+        ]
+      },
+      {
+        "id": "collection-vendors",
+        "name": "vendors",
+        "description": "Campus dining locations, dining halls, and authorized food trucks.",
+        "featureIds": [
+          "feature-browse-vendors",
+          "feature-admin-vendor-approval"
+        ],
+        "fields": [
+          {
+            "name": "_id",
+            "dataType": "ObjectId",
+            "required": true,
+            "unique": true,
+            "description": "Vendor identifier"
+          },
+          {
+            "name": "name",
+            "dataType": "String",
+            "required": true,
+            "unique": false,
+            "description": "Vendor trading name"
+          },
+          {
+            "name": "location",
+            "dataType": "String",
+            "required": true,
+            "unique": false,
+            "description": "Building/quad location name"
+          },
+          {
+            "name": "status",
+            "dataType": "String",
+            "required": true,
+            "unique": false,
+            "description": "ACTIVE, SUSPENDED, PENDING_REVIEW"
+          },
+          {
+            "name": "operatingHours",
+            "dataType": "Object",
+            "required": true,
+            "unique": false,
+            "description": "Embedded open and close hours per day",
+            "embeddedShape": {
+              "open": "String",
+              "close": "String"
+            }
+          }
+        ],
+        "indexes": [
+          "status_1",
+          "name_1"
+        ]
+      },
+      {
+        "id": "collection-menu-items",
+        "name": "menu_items",
+        "description": "Dishes, beverages, and meal combos offered by vendors.",
+        "featureIds": [
+          "feature-browse-vendors",
+          "feature-menu-management"
+        ],
+        "fields": [
+          {
+            "name": "_id",
+            "dataType": "ObjectId",
+            "required": true,
+            "unique": true,
+            "description": "Item ID"
+          },
+          {
+            "name": "vendorId",
+            "dataType": "ObjectId",
+            "required": true,
+            "unique": false,
+            "description": "Reference to parent vendor"
+          },
+          {
+            "name": "name",
+            "dataType": "String",
+            "required": true,
+            "unique": false,
+            "description": "Dish title"
+          },
+          {
+            "name": "priceCents",
+            "dataType": "Integer",
+            "required": true,
+            "unique": false,
+            "description": "Price in cents"
+          },
+          {
+            "name": "isAvailable",
+            "dataType": "Boolean",
+            "required": true,
+            "unique": false,
+            "description": "Current availability in kitchen"
+          },
+          {
+            "name": "dietaryTags",
+            "dataType": "Array<String>",
+            "required": true,
+            "unique": false,
+            "description": "e.g. Vegetarian, Halal, Nut-Free"
+          }
+        ],
+        "indexes": [
+          "vendorId_1_isAvailable_1"
+        ]
+      },
+      {
+        "id": "collection-orders",
+        "name": "orders",
+        "description": "Student food orders with line items, scheduling, and lifecycle states.",
+        "featureIds": [
+          "feature-place-order",
+          "feature-order-status",
+          "feature-menu-management"
+        ],
+        "fields": [
+          {
+            "name": "_id",
+            "dataType": "ObjectId",
+            "required": true,
+            "unique": true,
+            "description": "Order unique ID"
+          },
+          {
+            "name": "studentId",
+            "dataType": "ObjectId",
+            "required": true,
+            "unique": false,
+            "description": "Ordering student"
+          },
+          {
+            "name": "vendorId",
+            "dataType": "ObjectId",
+            "required": true,
+            "unique": false,
+            "description": "Fulfilling vendor"
+          },
+          {
+            "name": "status",
+            "dataType": "String",
+            "required": true,
+            "unique": false,
+            "description": "RECEIVED, PREPARING, READY, COLLECTED, CANCELLED"
+          },
+          {
+            "name": "items",
+            "dataType": "Array<Object>",
+            "required": true,
+            "unique": false,
+            "description": "Embedded snapshot of purchased items",
+            "embeddedShape": {
+              "itemId": "ObjectId",
+              "name": "String",
+              "quantity": "Integer",
+              "unitPrice": "Integer"
+            }
+          },
+          {
+            "name": "totalAmountCents",
+            "dataType": "Integer",
+            "required": true,
+            "unique": false,
+            "description": "Total order charge"
+          },
+          {
+            "name": "pickupSlot",
+            "dataType": "String",
+            "required": true,
+            "unique": false,
+            "description": "Requested pickup time window"
+          },
+          {
+            "name": "createdAt",
+            "dataType": "Date",
+            "required": true,
+            "unique": false,
+            "description": "Order creation timestamp"
+          }
+        ],
+        "indexes": [
+          "studentId_1_createdAt_-1",
+          "vendorId_1_status_1"
+        ]
+      }
+    ],
+    "relationships": [
+      {
+        "id": "rel-orders-student",
+        "sourceCollectionId": "collection-orders",
+        "targetCollectionId": "collection-users",
+        "sourceField": "studentId",
+        "targetField": "_id",
+        "cardinality": "ONE_TO_MANY",
+        "description": "Each order belongs to one registered student user."
+      },
+      {
+        "id": "rel-orders-vendor",
+        "sourceCollectionId": "collection-orders",
+        "targetCollectionId": "collection-vendors",
+        "sourceField": "vendorId",
+        "targetField": "_id",
+        "cardinality": "ONE_TO_MANY",
+        "description": "Each order is fulfilled by one campus vendor."
+      },
+      {
+        "id": "rel-menu-vendor",
+        "sourceCollectionId": "collection-menu-items",
+        "targetCollectionId": "collection-vendors",
+        "sourceField": "vendorId",
+        "targetField": "_id",
+        "cardinality": "ONE_TO_MANY",
+        "description": "Menu items belong to a specific vendor."
+      }
+    ]
+  },
+  "apis": [
+    {
+      "id": "api-get-vendors",
+      "method": "GET",
+      "path": "/vendors",
+      "purpose": "Retrieve list of campus dining vendors filtered by status or location.",
+      "featureIds": [
+        "feature-browse-vendors"
+      ],
+      "roleIds": [
+        "role-student",
+        "role-vendor",
+        "role-campus-admin"
+      ],
+      "authRequired": false,
+      "requestExample": null,
+      "responseExample": [
+        {
+          "id": "v-101",
+          "name": "Main Hall Diner",
+          "location": "Student Union Bld 2",
+          "status": "ACTIVE"
+        }
+      ],
+      "successStatus": 200,
+      "errorCases": [
+        {
+          "status": 500,
+          "code": "INTERNAL_ERROR",
+          "description": "Database query failure"
+        }
+      ]
+    },
+    {
+      "id": "api-get-menu",
+      "method": "GET",
+      "path": "/vendors/{vendorId}/menu",
+      "purpose": "Fetch all menu items and active availability for a specific vendor.",
+      "featureIds": [
+        "feature-browse-vendors"
+      ],
+      "roleIds": [
+        "role-student",
+        "role-vendor"
+      ],
+      "authRequired": false,
+      "requestExample": null,
+      "responseExample": [
+        {
+          "id": "m-201",
+          "name": "Grilled Chicken Rice Bowl",
+          "priceCents": 850,
+          "isAvailable": true,
+          "dietaryTags": [
+            "Halal",
+            "Gluten-Free"
+          ]
+        }
+      ],
+      "successStatus": 200,
+      "errorCases": [
+        {
+          "status": 404,
+          "code": "VENDOR_NOT_FOUND",
+          "description": "Specified vendor does not exist"
+        }
+      ]
+    },
+    {
+      "id": "api-create-order",
+      "method": "POST",
+      "path": "/orders",
+      "purpose": "Submit a new student food order with items, pickup slot, and payment token.",
+      "featureIds": [
+        "feature-place-order"
+      ],
+      "roleIds": [
+        "role-student"
+      ],
+      "authRequired": true,
+      "requestExample": {
+        "vendorId": "v-101",
+        "pickupSlot": "12:15-12:30",
+        "items": [
+          {
+            "itemId": "m-201",
+            "quantity": 1
+          }
+        ]
+      },
+      "responseExample": {
+        "orderId": "ord-8831",
+        "status": "RECEIVED",
+        "totalAmountCents": 850,
+        "pickupSlot": "12:15-12:30"
+      },
+      "successStatus": 201,
+      "errorCases": [
+        {
+          "status": 400,
+          "code": "ITEM_UNAVAILABLE",
+          "description": "One or more requested items are sold out"
+        },
+        {
+          "status": 401,
+          "code": "UNAUTHORIZED",
+          "description": "Missing or expired student session"
+        }
+      ]
+    },
+    {
+      "id": "api-get-order",
+      "method": "GET",
+      "path": "/orders/{orderId}",
+      "purpose": "Check current lifecycle status, estimated ready time, and pickup counter.",
+      "featureIds": [
+        "feature-order-status"
+      ],
+      "roleIds": [
+        "role-student",
+        "role-vendor"
+      ],
+      "authRequired": true,
+      "requestExample": null,
+      "responseExample": {
+        "orderId": "ord-8831",
+        "status": "PREPARING",
+        "pickupCounter": "Station 2"
+      },
+      "successStatus": 200,
+      "errorCases": [
+        {
+          "status": 404,
+          "code": "ORDER_NOT_FOUND",
+          "description": "Order ID not recognized"
+        }
+      ]
+    },
+    {
+      "id": "api-update-order-status",
+      "method": "PATCH",
+      "path": "/orders/{orderId}/status",
+      "purpose": "Kitchen staff updates order status (e.g. to READY or COLLECTED).",
+      "featureIds": [
+        "feature-order-status",
+        "feature-menu-management"
+      ],
+      "roleIds": [
+        "role-vendor"
+      ],
+      "authRequired": true,
+      "requestExample": {
+        "status": "READY"
+      },
+      "responseExample": {
+        "orderId": "ord-8831",
+        "status": "READY",
+        "updatedAt": "2026-09-22T12:22:00Z"
+      },
+      "successStatus": 200,
+      "errorCases": [
+        {
+          "status": 403,
+          "code": "FORBIDDEN",
+          "description": "Staff not authorized for this vendor"
+        }
+      ]
+    },
+    {
+      "id": "api-update-menu-item",
+      "method": "PUT",
+      "path": "/vendors/{vendorId}/menu/{itemId}",
+      "purpose": "Update item price, details, or toggle availability status.",
+      "featureIds": [
+        "feature-menu-management"
+      ],
+      "roleIds": [
+        "role-vendor"
+      ],
+      "authRequired": true,
+      "requestExample": {
+        "isAvailable": false
+      },
+      "responseExample": {
+        "itemId": "m-201",
+        "isAvailable": false
+      },
+      "successStatus": 200,
+      "errorCases": [
+        {
+          "status": 404,
+          "code": "ITEM_NOT_FOUND",
+          "description": "Item ID not found for vendor"
+        }
+      ]
+    },
+    {
+      "id": "api-approve-vendor",
+      "method": "PATCH",
+      "path": "/admin/vendors/{vendorId}/approve",
+      "purpose": "Campus administrator approves or modifies vendor vending permit.",
+      "featureIds": [
+        "feature-admin-vendor-approval"
+      ],
+      "roleIds": [
+        "role-campus-admin"
+      ],
+      "authRequired": true,
+      "requestExample": {
+        "status": "ACTIVE"
+      },
+      "responseExample": {
+        "vendorId": "v-101",
+        "status": "ACTIVE"
+      },
+      "successStatus": 200,
+      "errorCases": [
+        {
+          "status": 403,
+          "code": "UNAUTHORIZED_ADMIN",
+          "description": "Requires admin role"
+        }
+      ]
+    }
+  ],
+  "uiScreens": [
+    {
+      "id": "screen-student-home",
+      "name": "Campus Dining Directory",
+      "route": "/home",
+      "purpose": "Displays list of dining facilities, open statuses, and current wait time estimates.",
+      "roleIds": [
+        "role-student"
+      ],
+      "featureIds": [
+        "feature-browse-vendors"
+      ],
+      "components": [
+        "VendorCardGrid",
+        "LocationFilterBar",
+        "DietaryPills",
+        "RecentOrderBanner"
+      ],
+      "states": [
+        "loading",
+        "empty",
+        "populated",
+        "network-error"
+      ],
+      "actions": [
+        {
+          "id": "act-select-vendor",
+          "label": "Select Vendor",
+          "kind": "NAVIGATION",
+          "targetScreenId": "screen-vendor-menu"
+        }
+      ]
+    },
+    {
+      "id": "screen-vendor-menu",
+      "name": "Vendor Menu & Customization",
+      "route": "/vendors/{vendorId}",
+      "purpose": "Browse dish catalog, select meal portions, and add to current cart.",
+      "roleIds": [
+        "role-student"
+      ],
+      "featureIds": [
+        "feature-browse-vendors",
+        "feature-place-order"
+      ],
+      "components": [
+        "MenuHeader",
+        "ItemCategorySection",
+        "CustomizationDrawer",
+        "CartFloatingBar"
+      ],
+      "states": [
+        "loading",
+        "ready",
+        "vendor-closed"
+      ],
+      "actions": [
+        {
+          "id": "act-go-checkout",
+          "label": "Proceed to Checkout",
+          "kind": "NAVIGATION",
+          "targetScreenId": "screen-cart"
+        }
+      ]
+    },
+    {
+      "id": "screen-cart",
+      "name": "Order Checkout & Slot Selection",
+      "route": "/checkout",
+      "purpose": "Review items, select pickup time window between classes, and authorize payment.",
+      "roleIds": [
+        "role-student"
+      ],
+      "featureIds": [
+        "feature-place-order"
+      ],
+      "components": [
+        "ItemListReview",
+        "TimeSlotPicker",
+        "CampusCardPaymentToggle",
+        "OrderTotalSummary"
+      ],
+      "states": [
+        "empty",
+        "valid",
+        "processing",
+        "insufficient-funds"
+      ],
+      "actions": [
+        {
+          "id": "act-submit-order",
+          "label": "Confirm & Place Order",
+          "kind": "SUBMIT",
+          "targetScreenId": "screen-order-tracking"
+        }
+      ]
+    },
+    {
+      "id": "screen-order-tracking",
+      "name": "Order Tracking & Pickup Pass",
+      "route": "/orders/{orderId}",
+      "purpose": "Display live fulfillment status bar, pickup station number, and pickup barcode.",
+      "roleIds": [
+        "role-student"
+      ],
+      "featureIds": [
+        "feature-order-status"
+      ],
+      "components": [
+        "StatusProgressBar",
+        "PickupCodeDisplay",
+        "EstimatedTimeCard",
+        "OrderItemsReceipt"
+      ],
+      "states": [
+        "received",
+        "preparing",
+        "ready-for-pickup",
+        "collected"
+      ],
+      "actions": [
+        {
+          "id": "act-order-done",
+          "label": "Back to Home",
+          "kind": "NAVIGATION",
+          "targetScreenId": "screen-student-home"
+        }
+      ]
+    },
+    {
+      "id": "screen-kitchen-display",
+      "name": "Kitchen Orders Queue",
+      "route": "/vendor/kitchen-display",
+      "purpose": "Full-screen kitchen display showing incoming orders sorted by pickup slot.",
+      "roleIds": [
+        "role-vendor"
+      ],
+      "featureIds": [
+        "feature-menu-management",
+        "feature-order-status"
+      ],
+      "components": [
+        "QueueColumnReceived",
+        "QueueColumnPreparing",
+        "QueueColumnReady",
+        "OrderActionCards"
+      ],
+      "states": [
+        "idle",
+        "orders-active",
+        "urgent-delay"
+      ],
+      "actions": [
+        {
+          "id": "act-mark-ready",
+          "label": "Mark Ready for Pickup",
+          "kind": "MUTATION"
+        }
+      ]
+    },
+    {
+      "id": "screen-admin-dashboard",
+      "name": "Dining Admin Console",
+      "route": "/admin/vendors",
+      "purpose": "Administrator overview of vendor compliance, hygiene records, and system health.",
+      "roleIds": [
+        "role-campus-admin"
+      ],
+      "featureIds": [
+        "feature-admin-vendor-approval"
+      ],
+      "components": [
+        "VendorComplianceTable",
+        "PermitStatusBadge",
+        "DailyOrderVolumeChart",
+        "VendorApprovalModal"
+      ],
+      "states": [
+        "loading",
+        "table-ready"
+      ],
+      "actions": [
+        {
+          "id": "act-approve-vendor-btn",
+          "label": "Approve Permit",
+          "kind": "MUTATION"
+        }
+      ]
+    }
+  ],
+  "roadmap": [
+    {
+      "id": "phase-foundation",
+      "title": "Phase 1: Core Architecture & Vendor Directory",
+      "description": "Setup MongoDB persistence, basic user profiles, vendor catalog, and menu browsing.",
+      "featureIds": [
+        "feature-browse-vendors"
+      ],
+      "tasks": [
+        "Create collections for users, vendors, and menu items",
+        "Implement vendor list and menu detail REST endpoints",
+        "Build mobile-responsive directory UI"
+      ],
+      "dependsOnPhaseIds": [],
+      "completionCriteria": [
+        "Students can view verified vendors and menus on mobile devices"
+      ]
+    },
+    {
+      "id": "phase-ordering-flow",
+      "title": "Phase 2: Ordering & Payment Integration",
+      "description": "Cart management, time-slot pickup selection, campus meal card payment flow.",
+      "featureIds": [
+        "feature-place-order",
+        "feature-order-status"
+      ],
+      "tasks": [
+        "Implement atomic order creation with inventory validation",
+        "Build checkout page with pickup time picker",
+        "Connect campus payment debit handler"
+      ],
+      "dependsOnPhaseIds": [
+        "phase-foundation"
+      ],
+      "completionCriteria": [
+        "Students can complete an order and receive a validated pickup confirmation"
+      ]
+    },
+    {
+      "id": "phase-vendor-portal",
+      "title": "Phase 3: Kitchen Display System & Real-Time Alerts",
+      "description": "Kitchen tablet UI for order fulfillment and live status updates.",
+      "featureIds": [
+        "feature-menu-management",
+        "feature-order-status"
+      ],
+      "tasks": [
+        "Build responsive kitchen display board",
+        "Implement status mutation API and student notification dispatch",
+        "Add sold-out 86 toggle for menu items"
+      ],
+      "dependsOnPhaseIds": [
+        "phase-ordering-flow"
+      ],
+      "completionCriteria": [
+        "Kitchen staff can transition orders from Received to Ready in 1 click"
+      ]
+    },
+    {
+      "id": "phase-admin-analytics",
+      "title": "Phase 4: Admin Management & Auditing",
+      "description": "Dining administration console for vendor registration, hygiene certification, and reports.",
+      "featureIds": [
+        "feature-admin-vendor-approval"
+      ],
+      "tasks": [
+        "Implement vendor approval workflows and suspension controls",
+        "Build admin metrics dashboard for order volumes"
+      ],
+      "dependsOnPhaseIds": [
+        "phase-vendor-portal"
+      ],
+      "completionCriteria": [
+        "Administrators can audit and toggle vendor operational status"
+      ]
+    }
+  ],
+  "assumptions": [
+    {
+      "id": "asm-student-auth",
+      "description": "Student identities will be verified via university Single Sign-On (SSO / OAuth2) providing a verified campus ID.",
+      "affectedEntityIds": [
+        "role-student",
+        "collection-users"
+      ],
+      "reason": "Prevents anonymous spam orders and links student accounts to campus dining card IDs."
+    },
+    {
+      "id": "asm-local-currency",
+      "description": "All menu prices and transactions use campus dining meal points or domestic currency in cents.",
+      "affectedEntityIds": [
+        "collection-orders",
+        "api-create-order"
+      ],
+      "reason": "Simplifies monetary math to integer cents without floating point precision issues."
+    }
+  ],
+  "openQuestions": [
+    {
+      "id": "q-campus-card-api",
+      "question": "Does the campus meal card service support a synchronous HTTP REST API for debiting funds at checkout time, or does it require batch clearing?",
+      "affectedEntityIds": [
+        "feature-place-order",
+        "api-create-order"
+      ],
+      "whyItMatters": "Determines whether order creation can immediately mark orders paid or requires an asynchronous pending verification state."
+    }
+  ],
+  "projectType": "SOFTWARE",
+  "classification": {
+    "type": "SOFTWARE",
+    "reason": "Project focuses on software architecture, frontend screens, database schema design, and backend REST APIs.",
+    "confidence": "HIGH"
+  },
+  "estimates": {
+    "difficulty": "MEDIUM",
+    "estimatedDuration": "6–8 weeks",
+    "recommendedTeamSize": 4,
+    "teamRoles": [
+      {
+        "role": "Frontend Engineer",
+        "count": 1,
+        "responsibility": "Student mobile-responsive web app, menu browser, and live pickup UI"
+      },
+      {
+        "role": "Backend Engineer",
+        "count": 1,
+        "responsibility": "Spring Boot REST services, concurrency control, and MongoDB persistence"
+      },
+      {
+        "role": "UI/UX Designer",
+        "count": 1,
+        "responsibility": "High-contrast kitchen display board and student ordering flows"
+      },
+      {
+        "role": "QA Engineer",
+        "count": 1,
+        "responsibility": "Automated order flow testing and peak concurrency validation"
+      }
+    ],
+    "estimatedCost": {
+      "currency": "USD",
+      "minimum": 15000,
+      "maximum": 28000,
+      "basis": "4 engineers over 6–8 weeks, cloud hosting, and SMS notification gateways.",
+      "disclaimer": "Approximate estimate based on the supplied requirements."
+    },
+    "resources": [
+      {
+        "name": "Application Server Cluster",
+        "type": "INFRASTRUCTURE",
+        "purpose": "Spring Boot application deployment"
+      },
+      {
+        "name": "Managed MongoDB Database",
+        "type": "INFRASTRUCTURE",
+        "purpose": "Transactional persistence for orders and menus"
+      },
+      {
+        "name": "SMS Gateway Service",
+        "type": "SERVICE",
+        "purpose": "Dispatching pickup alert notifications"
+      }
+    ]
+  },
+  "software": {
+    "applicable": true,
+    "architecture": {
+      "pattern": "Client-Server Layered Architecture",
+      "description": "Single-page React client communicating with a Spring Boot REST API layer backed by MongoDB persistence."
+    },
+    "recommendedTechStack": {
+      "frontend": {
+        "technology": "React 19 + Vite",
+        "reason": "Lightweight virtual DOM and fast mobile bundle delivery for students walking between lectures",
+        "alternatives": [
+          "Next.js",
+          "Vue 3"
+        ],
+        "tradeOffs": "Client-side routing requires separate SSR configuration if SEO is required"
+      },
+      "backend": {
+        "technology": "Spring Boot 3 (Java 21)",
+        "reason": "Enterprise stability, strong concurrency primitives, and clean separation of concerns",
+        "alternatives": [
+          "Node.js / Express",
+          "FastAPI"
+        ],
+        "tradeOffs": "Higher initial memory footprint than micro-frameworks"
+      },
+      "database": {
+        "technology": "MongoDB",
+        "reason": "Flexible document structure well suited for nested meal customizations, menus, and dynamic line items",
+        "alternatives": [
+          "PostgreSQL"
+        ],
+        "tradeOffs": "Requires careful application-level indexing for high-volume transactions"
+      },
+      "deployment": {
+        "technology": "Docker + Linux Cloud VPS",
+        "reason": "Containerized reproducible execution with predictable cost",
+        "alternatives": [
+          "AWS ECS / Fargate",
+          "Vercel"
+        ],
+        "tradeOffs": "Requires container maintenance and manual orchestration"
+      },
+      "testing": {
+        "technology": "JUnit 5 + Mockito + Playwright",
+        "reason": "Full verification from isolated business rules to browser ordering flows",
+        "alternatives": [
+          "Cypress",
+          "Selenium"
+        ],
+        "tradeOffs": "Browser tests require browser binary provisioning in CI"
+      },
+      "optionalServices": [
+        {
+          "technology": "Redis",
+          "reason": "Fast in-memory cache for vendor daily menu and peak session tokens",
+          "alternatives": [
+            "Local In-Memory Cache"
+          ],
+          "tradeOffs": "Adds an additional stateful service to monitor"
+        }
+      ]
+    },
+    "modules": [
+      {
+        "id": "mod-menu",
+        "name": "Menu & Vendor Catalog",
+        "description": "Vendor directory, item listings, and pricing",
+        "responsibilities": "Filter dietary tags, verify operational hours"
+      },
+      {
+        "id": "mod-order",
+        "name": "Order Lifecycle Engine",
+        "description": "Cart calculation, slot booking, and state transitions",
+        "responsibilities": "Atomic inventory validation, queue dispatch"
+      }
+    ],
+    "database": {
+      "collections": [
+        {
+          "id": "collection-users",
+          "name": "users",
+          "description": "Stores user profiles including students, vendor operators, and campus admins.",
+          "featureIds": [
+            "feature-browse-vendors",
+            "feature-place-order"
+          ],
+          "fields": [
+            {
+              "name": "_id",
+              "dataType": "ObjectId",
+              "required": true,
+              "unique": true,
+              "description": "Primary key"
+            },
+            {
+              "name": "campusId",
+              "dataType": "String",
+              "required": true,
+              "unique": true,
+              "description": "Student or Staff ID"
+            },
+            {
+              "name": "email",
+              "dataType": "String",
+              "required": true,
+              "unique": true,
+              "description": "Campus institutional email"
+            },
+            {
+              "name": "fullName",
+              "dataType": "String",
+              "required": true,
+              "unique": false,
+              "description": "Display name"
+            },
+            {
+              "name": "role",
+              "dataType": "String",
+              "required": true,
+              "unique": false,
+              "description": "STUDENT, VENDOR, ADMIN"
+            },
+            {
+              "name": "createdAt",
+              "dataType": "Date",
+              "required": true,
+              "unique": false,
+              "description": "Account registration timestamp"
+            }
+          ],
+          "indexes": [
+            "campusId_1",
+            "email_1",
+            "role_1"
+          ]
+        },
+        {
+          "id": "collection-vendors",
+          "name": "vendors",
+          "description": "Campus dining locations, dining halls, and authorized food trucks.",
+          "featureIds": [
+            "feature-browse-vendors",
+            "feature-admin-vendor-approval"
+          ],
+          "fields": [
+            {
+              "name": "_id",
+              "dataType": "ObjectId",
+              "required": true,
+              "unique": true,
+              "description": "Vendor identifier"
+            },
+            {
+              "name": "name",
+              "dataType": "String",
+              "required": true,
+              "unique": false,
+              "description": "Vendor trading name"
+            },
+            {
+              "name": "location",
+              "dataType": "String",
+              "required": true,
+              "unique": false,
+              "description": "Building/quad location name"
+            },
+            {
+              "name": "status",
+              "dataType": "String",
+              "required": true,
+              "unique": false,
+              "description": "ACTIVE, SUSPENDED, PENDING_REVIEW"
+            },
+            {
+              "name": "operatingHours",
+              "dataType": "Object",
+              "required": true,
+              "unique": false,
+              "description": "Embedded open and close hours per day",
+              "embeddedShape": {
+                "open": "String",
+                "close": "String"
+              }
+            }
+          ],
+          "indexes": [
+            "status_1",
+            "name_1"
+          ]
+        },
+        {
+          "id": "collection-menu-items",
+          "name": "menu_items",
+          "description": "Dishes, beverages, and meal combos offered by vendors.",
+          "featureIds": [
+            "feature-browse-vendors",
+            "feature-menu-management"
+          ],
+          "fields": [
+            {
+              "name": "_id",
+              "dataType": "ObjectId",
+              "required": true,
+              "unique": true,
+              "description": "Item ID"
+            },
+            {
+              "name": "vendorId",
+              "dataType": "ObjectId",
+              "required": true,
+              "unique": false,
+              "description": "Reference to parent vendor"
+            },
+            {
+              "name": "name",
+              "dataType": "String",
+              "required": true,
+              "unique": false,
+              "description": "Dish title"
+            },
+            {
+              "name": "priceCents",
+              "dataType": "Integer",
+              "required": true,
+              "unique": false,
+              "description": "Price in cents"
+            },
+            {
+              "name": "isAvailable",
+              "dataType": "Boolean",
+              "required": true,
+              "unique": false,
+              "description": "Current availability in kitchen"
+            },
+            {
+              "name": "dietaryTags",
+              "dataType": "Array<String>",
+              "required": true,
+              "unique": false,
+              "description": "e.g. Vegetarian, Halal, Nut-Free"
+            }
+          ],
+          "indexes": [
+            "vendorId_1_isAvailable_1"
+          ]
+        },
+        {
+          "id": "collection-orders",
+          "name": "orders",
+          "description": "Student food orders with line items, scheduling, and lifecycle states.",
+          "featureIds": [
+            "feature-place-order",
+            "feature-order-status",
+            "feature-menu-management"
+          ],
+          "fields": [
+            {
+              "name": "_id",
+              "dataType": "ObjectId",
+              "required": true,
+              "unique": true,
+              "description": "Order unique ID"
+            },
+            {
+              "name": "studentId",
+              "dataType": "ObjectId",
+              "required": true,
+              "unique": false,
+              "description": "Ordering student"
+            },
+            {
+              "name": "vendorId",
+              "dataType": "ObjectId",
+              "required": true,
+              "unique": false,
+              "description": "Fulfilling vendor"
+            },
+            {
+              "name": "status",
+              "dataType": "String",
+              "required": true,
+              "unique": false,
+              "description": "RECEIVED, PREPARING, READY, COLLECTED, CANCELLED"
+            },
+            {
+              "name": "items",
+              "dataType": "Array<Object>",
+              "required": true,
+              "unique": false,
+              "description": "Embedded snapshot of purchased items",
+              "embeddedShape": {
+                "itemId": "ObjectId",
+                "name": "String",
+                "quantity": "Integer",
+                "unitPrice": "Integer"
+              }
+            },
+            {
+              "name": "totalAmountCents",
+              "dataType": "Integer",
+              "required": true,
+              "unique": false,
+              "description": "Total order charge"
+            },
+            {
+              "name": "pickupSlot",
+              "dataType": "String",
+              "required": true,
+              "unique": false,
+              "description": "Requested pickup time window"
+            },
+            {
+              "name": "createdAt",
+              "dataType": "Date",
+              "required": true,
+              "unique": false,
+              "description": "Order creation timestamp"
+            }
+          ],
+          "indexes": [
+            "studentId_1_createdAt_-1",
+            "vendorId_1_status_1"
+          ]
+        }
+      ],
+      "relationships": [
+        {
+          "id": "rel-orders-student",
+          "sourceCollectionId": "collection-orders",
+          "targetCollectionId": "collection-users",
+          "sourceField": "studentId",
+          "targetField": "_id",
+          "cardinality": "ONE_TO_MANY",
+          "description": "Each order belongs to one registered student user."
+        },
+        {
+          "id": "rel-orders-vendor",
+          "sourceCollectionId": "collection-orders",
+          "targetCollectionId": "collection-vendors",
+          "sourceField": "vendorId",
+          "targetField": "_id",
+          "cardinality": "ONE_TO_MANY",
+          "description": "Each order is fulfilled by one campus vendor."
+        },
+        {
+          "id": "rel-menu-vendor",
+          "sourceCollectionId": "collection-menu-items",
+          "targetCollectionId": "collection-vendors",
+          "sourceField": "vendorId",
+          "targetField": "_id",
+          "cardinality": "ONE_TO_MANY",
+          "description": "Menu items belong to a specific vendor."
+        }
+      ]
+    },
+    "apis": [
+      {
+        "id": "api-get-vendors",
+        "method": "GET",
+        "path": "/vendors",
+        "purpose": "Retrieve list of campus dining vendors filtered by status or location.",
+        "featureIds": [
+          "feature-browse-vendors"
+        ],
+        "roleIds": [
+          "role-student",
+          "role-vendor",
+          "role-campus-admin"
+        ],
+        "authRequired": false,
+        "requestExample": null,
+        "responseExample": [
+          {
+            "id": "v-101",
+            "name": "Main Hall Diner",
+            "location": "Student Union Bld 2",
+            "status": "ACTIVE"
+          }
+        ],
+        "successStatus": 200,
+        "errorCases": [
+          {
+            "status": 500,
+            "code": "INTERNAL_ERROR",
+            "description": "Database query failure"
+          }
+        ]
+      },
+      {
+        "id": "api-get-menu",
+        "method": "GET",
+        "path": "/vendors/{vendorId}/menu",
+        "purpose": "Fetch all menu items and active availability for a specific vendor.",
+        "featureIds": [
+          "feature-browse-vendors"
+        ],
+        "roleIds": [
+          "role-student",
+          "role-vendor"
+        ],
+        "authRequired": false,
+        "requestExample": null,
+        "responseExample": [
+          {
+            "id": "m-201",
+            "name": "Grilled Chicken Rice Bowl",
+            "priceCents": 850,
+            "isAvailable": true,
+            "dietaryTags": [
+              "Halal",
+              "Gluten-Free"
+            ]
+          }
+        ],
+        "successStatus": 200,
+        "errorCases": [
+          {
+            "status": 404,
+            "code": "VENDOR_NOT_FOUND",
+            "description": "Specified vendor does not exist"
+          }
+        ]
+      },
+      {
+        "id": "api-create-order",
+        "method": "POST",
+        "path": "/orders",
+        "purpose": "Submit a new student food order with items, pickup slot, and payment token.",
+        "featureIds": [
+          "feature-place-order"
+        ],
+        "roleIds": [
+          "role-student"
+        ],
+        "authRequired": true,
+        "requestExample": {
+          "vendorId": "v-101",
+          "pickupSlot": "12:15-12:30",
+          "items": [
+            {
+              "itemId": "m-201",
+              "quantity": 1
+            }
+          ]
+        },
+        "responseExample": {
+          "orderId": "ord-8831",
+          "status": "RECEIVED",
+          "totalAmountCents": 850,
+          "pickupSlot": "12:15-12:30"
+        },
+        "successStatus": 201,
+        "errorCases": [
+          {
+            "status": 400,
+            "code": "ITEM_UNAVAILABLE",
+            "description": "One or more requested items are sold out"
+          },
+          {
+            "status": 401,
+            "code": "UNAUTHORIZED",
+            "description": "Missing or expired student session"
+          }
+        ]
+      },
+      {
+        "id": "api-get-order",
+        "method": "GET",
+        "path": "/orders/{orderId}",
+        "purpose": "Check current lifecycle status, estimated ready time, and pickup counter.",
+        "featureIds": [
+          "feature-order-status"
+        ],
+        "roleIds": [
+          "role-student",
+          "role-vendor"
+        ],
+        "authRequired": true,
+        "requestExample": null,
+        "responseExample": {
+          "orderId": "ord-8831",
+          "status": "PREPARING",
+          "pickupCounter": "Station 2"
+        },
+        "successStatus": 200,
+        "errorCases": [
+          {
+            "status": 404,
+            "code": "ORDER_NOT_FOUND",
+            "description": "Order ID not recognized"
+          }
+        ]
+      },
+      {
+        "id": "api-update-order-status",
+        "method": "PATCH",
+        "path": "/orders/{orderId}/status",
+        "purpose": "Kitchen staff updates order status (e.g. to READY or COLLECTED).",
+        "featureIds": [
+          "feature-order-status",
+          "feature-menu-management"
+        ],
+        "roleIds": [
+          "role-vendor"
+        ],
+        "authRequired": true,
+        "requestExample": {
+          "status": "READY"
+        },
+        "responseExample": {
+          "orderId": "ord-8831",
+          "status": "READY",
+          "updatedAt": "2026-09-22T12:22:00Z"
+        },
+        "successStatus": 200,
+        "errorCases": [
+          {
+            "status": 403,
+            "code": "FORBIDDEN",
+            "description": "Staff not authorized for this vendor"
+          }
+        ]
+      },
+      {
+        "id": "api-update-menu-item",
+        "method": "PUT",
+        "path": "/vendors/{vendorId}/menu/{itemId}",
+        "purpose": "Update item price, details, or toggle availability status.",
+        "featureIds": [
+          "feature-menu-management"
+        ],
+        "roleIds": [
+          "role-vendor"
+        ],
+        "authRequired": true,
+        "requestExample": {
+          "isAvailable": false
+        },
+        "responseExample": {
+          "itemId": "m-201",
+          "isAvailable": false
+        },
+        "successStatus": 200,
+        "errorCases": [
+          {
+            "status": 404,
+            "code": "ITEM_NOT_FOUND",
+            "description": "Item ID not found for vendor"
+          }
+        ]
+      },
+      {
+        "id": "api-approve-vendor",
+        "method": "PATCH",
+        "path": "/admin/vendors/{vendorId}/approve",
+        "purpose": "Campus administrator approves or modifies vendor vending permit.",
+        "featureIds": [
+          "feature-admin-vendor-approval"
+        ],
+        "roleIds": [
+          "role-campus-admin"
+        ],
+        "authRequired": true,
+        "requestExample": {
+          "status": "ACTIVE"
+        },
+        "responseExample": {
+          "vendorId": "v-101",
+          "status": "ACTIVE"
+        },
+        "successStatus": 200,
+        "errorCases": [
+          {
+            "status": 403,
+            "code": "UNAUTHORIZED_ADMIN",
+            "description": "Requires admin role"
+          }
+        ]
+      }
+    ],
+    "screens": [
+      {
+        "id": "screen-student-home",
+        "name": "Campus Dining Directory",
+        "route": "/home",
+        "purpose": "Displays list of dining facilities, open statuses, and current wait time estimates.",
+        "roleIds": [
+          "role-student"
+        ],
+        "featureIds": [
+          "feature-browse-vendors"
+        ],
+        "components": [
+          "VendorCardGrid",
+          "LocationFilterBar",
+          "DietaryPills",
+          "RecentOrderBanner"
+        ],
+        "states": [
+          "loading",
+          "empty",
+          "populated",
+          "network-error"
+        ],
+        "actions": [
+          {
+            "id": "act-select-vendor",
+            "label": "Select Vendor",
+            "kind": "NAVIGATION",
+            "targetScreenId": "screen-vendor-menu"
+          }
+        ]
+      },
+      {
+        "id": "screen-vendor-menu",
+        "name": "Vendor Menu & Customization",
+        "route": "/vendors/{vendorId}",
+        "purpose": "Browse dish catalog, select meal portions, and add to current cart.",
+        "roleIds": [
+          "role-student"
+        ],
+        "featureIds": [
+          "feature-browse-vendors",
+          "feature-place-order"
+        ],
+        "components": [
+          "MenuHeader",
+          "ItemCategorySection",
+          "CustomizationDrawer",
+          "CartFloatingBar"
+        ],
+        "states": [
+          "loading",
+          "ready",
+          "vendor-closed"
+        ],
+        "actions": [
+          {
+            "id": "act-go-checkout",
+            "label": "Proceed to Checkout",
+            "kind": "NAVIGATION",
+            "targetScreenId": "screen-cart"
+          }
+        ]
+      },
+      {
+        "id": "screen-cart",
+        "name": "Order Checkout & Slot Selection",
+        "route": "/checkout",
+        "purpose": "Review items, select pickup time window between classes, and authorize payment.",
+        "roleIds": [
+          "role-student"
+        ],
+        "featureIds": [
+          "feature-place-order"
+        ],
+        "components": [
+          "ItemListReview",
+          "TimeSlotPicker",
+          "CampusCardPaymentToggle",
+          "OrderTotalSummary"
+        ],
+        "states": [
+          "empty",
+          "valid",
+          "processing",
+          "insufficient-funds"
+        ],
+        "actions": [
+          {
+            "id": "act-submit-order",
+            "label": "Confirm & Place Order",
+            "kind": "SUBMIT",
+            "targetScreenId": "screen-order-tracking"
+          }
+        ]
+      },
+      {
+        "id": "screen-order-tracking",
+        "name": "Order Tracking & Pickup Pass",
+        "route": "/orders/{orderId}",
+        "purpose": "Display live fulfillment status bar, pickup station number, and pickup barcode.",
+        "roleIds": [
+          "role-student"
+        ],
+        "featureIds": [
+          "feature-order-status"
+        ],
+        "components": [
+          "StatusProgressBar",
+          "PickupCodeDisplay",
+          "EstimatedTimeCard",
+          "OrderItemsReceipt"
+        ],
+        "states": [
+          "received",
+          "preparing",
+          "ready-for-pickup",
+          "collected"
+        ],
+        "actions": [
+          {
+            "id": "act-order-done",
+            "label": "Back to Home",
+            "kind": "NAVIGATION",
+            "targetScreenId": "screen-student-home"
+          }
+        ]
+      },
+      {
+        "id": "screen-kitchen-display",
+        "name": "Kitchen Orders Queue",
+        "route": "/vendor/kitchen-display",
+        "purpose": "Full-screen kitchen display showing incoming orders sorted by pickup slot.",
+        "roleIds": [
+          "role-vendor"
+        ],
+        "featureIds": [
+          "feature-menu-management",
+          "feature-order-status"
+        ],
+        "components": [
+          "QueueColumnReceived",
+          "QueueColumnPreparing",
+          "QueueColumnReady",
+          "OrderActionCards"
+        ],
+        "states": [
+          "idle",
+          "orders-active",
+          "urgent-delay"
+        ],
+        "actions": [
+          {
+            "id": "act-mark-ready",
+            "label": "Mark Ready for Pickup",
+            "kind": "MUTATION"
+          }
+        ]
+      },
+      {
+        "id": "screen-admin-dashboard",
+        "name": "Dining Admin Console",
+        "route": "/admin/vendors",
+        "purpose": "Administrator overview of vendor compliance, hygiene records, and system health.",
+        "roleIds": [
+          "role-campus-admin"
+        ],
+        "featureIds": [
+          "feature-admin-vendor-approval"
+        ],
+        "components": [
+          "VendorComplianceTable",
+          "PermitStatusBadge",
+          "DailyOrderVolumeChart",
+          "VendorApprovalModal"
+        ],
+        "states": [
+          "loading",
+          "table-ready"
+        ],
+        "actions": [
+          {
+            "id": "act-approve-vendor-btn",
+            "label": "Approve Permit",
+            "kind": "MUTATION"
+          }
+        ]
+      }
+    ],
+    "userFlows": [
+      {
+        "id": "flow-student-order",
+        "name": "Student Pre-Order & Pickup Flow",
+        "description": "Student browses food options, customizes meal, selects pickup time, and collects meal.",
+        "steps": [
+          "Open campus dining app",
+          "Select vendor and choose food item",
+          "Customize dietary options (e.g. spice level)",
+          "Select available 5-minute pickup time window",
+          "Confirm order and receive pickup pass",
+          "Show barcode at pickup station to collect food"
+        ]
+      }
+    ],
+    "integrations": [
+      {
+        "source": "Order Service",
+        "destination": "Campus SMS Gateway",
+        "protocol": "HTTPS",
+        "data": "Order ready notifications with student phone and pickup code",
+        "purpose": "Alert students when kitchen marks order ready"
+      }
+    ],
+    "testingStrategy": {
+      "unitTesting": "JUnit 5 for business services and order slot calculations",
+      "integrationTesting": "Spring Data MongoDB integration tests with embedded MongoDB",
+      "e2eTesting": "Playwright automated journeys covering student checkout to vendor receipt"
+    },
+    "deploymentPlan": {
+      "environment": "Docker container on Linux Cloud Host",
+      "steps": [
+        "Compile backend jar and build frontend production assets",
+        "Package multi-stage Docker image",
+        "Run automated health checks on /api/health",
+        "Configure SSL reverse proxy via Caddy/Nginx"
+      ],
+      "monitoring": "Structured JSON logging and Spring Boot Actuator endpoints"
+    },
+    "prototype": {
+      "generated": true,
+      "platform": "WEB",
+      "startScreenId": "screen-vendors",
+      "screens": [
+        {
+          "id": "screen-vendors",
+          "name": "Campus Dining Vendors",
+          "purpose": "Browse active campus dining halls and food trucks",
+          "layout": "SINGLE_COLUMN",
+          "sampleData": {
+            "campus": "University Central Campus"
+          },
+          "components": [
+            {
+              "id": "cmp-heading",
+              "type": "Heading",
+              "props": {
+                "level": 2,
+                "text": "Campus Dining Locations"
+              }
+            },
+            {
+              "id": "cmp-desc",
+              "type": "Text",
+              "props": {
+                "content": "Skip the lunchtime rush — pre-order meals for fast pickup between lectures."
+              }
+            },
+            {
+              "id": "cmp-vendor-list",
+              "type": "List",
+              "props": {
+                "items": [
+                  {
+                    "id": "v1",
+                    "title": "Green Quad Burrito Truck",
+                    "badge": "Open • Fast Pickup",
+                    "subtitle": "Tacos, Bowls & Fresh Salsa (Avg wait: 4 min)"
+                  },
+                  {
+                    "id": "v2",
+                    "title": "Student Center Diner",
+                    "badge": "Open",
+                    "subtitle": "Burgers, Fries & Salads (Avg wait: 8 min)"
+                  },
+                  {
+                    "id": "v3",
+                    "title": "Library Espresso Bar",
+                    "badge": "Open",
+                    "subtitle": "Artisan Coffee & Gourmet Paninis (Avg wait: 2 min)"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "cmp-btn-menu",
+              "type": "Button",
+              "props": {
+                "label": "Select Green Quad Truck Menu",
+                "variant": "primary"
+              },
+              "action": {
+                "type": "NAVIGATE",
+                "targetScreenId": "screen-menu"
+              }
+            }
+          ]
+        },
+        {
+          "id": "screen-menu",
+          "name": "Vendor Menu & Customizer",
+          "purpose": "Select dish, customize options, and reserve pickup window",
+          "layout": "SINGLE_COLUMN",
+          "sampleData": {
+            "vendor": "Green Quad Burrito Truck"
+          },
+          "components": [
+            {
+              "id": "cmp-menu-heading",
+              "type": "Heading",
+              "props": {
+                "level": 2,
+                "text": "Green Quad Burrito Truck"
+              }
+            },
+            {
+              "id": "cmp-item-card",
+              "type": "Card",
+              "props": {
+                "title": "Fiesta Grilled Chicken & Avocado Bowl",
+                "subtitle": "$8.50 • High Protein • Gluten-Free Option",
+                "description": "Cilantro lime rice, seasoned black beans, fire-roasted corn, guacamole, and house chipotle crema."
+              }
+            },
+            {
+              "id": "cmp-spice-select",
+              "type": "Select",
+              "props": {
+                "label": "Custom Spice Level",
+                "name": "spiceLevel",
+                "options": [
+                  "Mild Salsa Verde",
+                  "Medium Smoky Chipotle",
+                  "Fiery Habanero Hot Sauce"
+                ]
+              }
+            },
+            {
+              "id": "cmp-time-select",
+              "type": "Select",
+              "props": {
+                "label": "Pickup Time Window",
+                "name": "pickupWindow",
+                "options": [
+                  "12:15 PM – 12:20 PM",
+                  "12:30 PM – 12:35 PM",
+                  "12:45 PM – 12:50 PM"
+                ]
+              }
+            },
+            {
+              "id": "cmp-btn-checkout",
+              "type": "Button",
+              "props": {
+                "label": "Reserve & Place Order ($8.50)",
+                "variant": "primary"
+              },
+              "action": {
+                "type": "NAVIGATE",
+                "targetScreenId": "screen-order-confirm"
+              }
+            },
+            {
+              "id": "cmp-btn-back-vendors",
+              "type": "Button",
+              "props": {
+                "label": "Back to Vendor List",
+                "variant": "secondary"
+              },
+              "action": {
+                "type": "NAVIGATE",
+                "targetScreenId": "screen-vendors"
+              }
+            }
+          ]
+        },
+        {
+          "id": "screen-order-confirm",
+          "name": "Order Status & Pickup Pass",
+          "purpose": "Live preparation tracking with verified pickup pass",
+          "layout": "SINGLE_COLUMN",
+          "sampleData": {
+            "orderId": "CB-8492"
+          },
+          "components": [
+            {
+              "id": "cmp-badge-ready",
+              "type": "Badge",
+              "props": {
+                "text": "Order #CB-8492 Confirmed",
+                "variant": "success"
+              }
+            },
+            {
+              "id": "cmp-stat-status",
+              "type": "StatCard",
+              "props": {
+                "label": "Kitchen Preparation Stage",
+                "value": "In Kitchen (Prep in Progress)",
+                "hint": "Estimated ready for pickup in 5 minutes"
+              }
+            },
+            {
+              "id": "cmp-pass-card",
+              "type": "Card",
+              "props": {
+                "title": "Pickup Window: 12:15 PM – 12:20 PM",
+                "subtitle": "Location: Green Quad Truck #2 (Window B)",
+                "description": "Please show your student ID or order confirmation code CB-8492 upon arrival."
+              }
+            },
+            {
+              "id": "cmp-btn-reset",
+              "type": "Button",
+              "props": {
+                "label": "Place Another Pre-Order",
+                "variant": "secondary"
+              },
+              "action": {
+                "type": "NAVIGATE",
+                "targetScreenId": "screen-vendors"
+              }
+            }
+          ]
+        }
+      ],
+      "navigation": [
+        {
+          "fromScreenId": "screen-vendors",
+          "actionId": "cmp-btn-menu",
+          "toScreenId": "screen-menu"
+        },
+        {
+          "fromScreenId": "screen-menu",
+          "actionId": "cmp-btn-checkout",
+          "toScreenId": "screen-order-confirm"
+        },
+        {
+          "fromScreenId": "screen-menu",
+          "actionId": "cmp-btn-back-vendors",
+          "toScreenId": "screen-vendors"
+        },
+        {
+          "fromScreenId": "screen-order-confirm",
+          "actionId": "cmp-btn-reset",
+          "toScreenId": "screen-vendors"
+        }
+      ]
+    }
+  },
+  "hardware": {
+    "applicable": false
+  },
+  "risks": [
+    {
+      "id": "risk-peak-concurrency",
+      "title": "Class Transition Surge Congestion",
+      "severity": "HIGH",
+      "mitigation": "Cap order slots to 25 orders per 5-minute window per kitchen to avoid cooking bottlenecks."
+    },
+    {
+      "id": "risk-no-shows",
+      "title": "Uncollected Prepared Orders",
+      "severity": "MEDIUM",
+      "mitigation": "Require student campus card authorization before meal preparation commences."
+    }
+  ],
+  "recommendations": [
+    {
+      "id": "rec-kitchen-printer",
+      "category": "IMPROVEMENT",
+      "title": "Kitchen Thermal Printer Integration",
+      "description": "Add optional integration with network thermal printers for kitchens that prefer physical order tickets."
+    },
+    {
+      "id": "rec-loyalty-rewards",
+      "category": "FUTURE_FEATURE",
+      "title": "Campus Dining Points Rewards",
+      "description": "Introduce student loyalty badges and coffee rewards to encourage repeat pre-ordering."
+    }
+  ]
+}

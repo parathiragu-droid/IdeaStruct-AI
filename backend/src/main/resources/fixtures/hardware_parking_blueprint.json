@@ -1,0 +1,741 @@
+{
+  "schemaVersion": "2.0",
+  "projectType": "HARDWARE",
+  "classification": {
+    "type": "HARDWARE",
+    "reason": "Project primarily focuses on physical circuit design, embedded controller selection, sensors/actuators, and wiring connections.",
+    "confidence": "HIGH"
+  },
+  "overview": {
+    "projectName": "SpotSense — Overhead Smart Parking Bay Occupancy Detector",
+    "summary": "SpotSense is an intelligent overhead parking sensor unit designed for multi-level garages. It continuously measures vehicle presence using ultrasonic sonar telemetry, signals slot availability with a high-intensity 360-degree RGB beacon, sounds proximity warnings, and displays bay status on an integrated OLED display.",
+    "problemStatement": "Drivers spend an average of 15 minutes searching for vacant spots in enclosed parking garages, producing excess emissions and traffic congestion due to lack of real-time slot occupancy sensing.",
+    "targetUsers": [
+      "Parking Garage Operators",
+      "Smart City Infrastructure Engineers",
+      "Commercial Facility Managers"
+    ],
+    "goals": [
+      "Detect vehicle presence within 5cm to 350cm ceiling range in under 150ms",
+      "Drive visual green/red RGB beacon for driver guidance visible from 50 meters",
+      "Provide local I2C OLED display for bay ID, distance telemetry, and technician calibration"
+    ],
+    "scope": [
+      "Downward-facing HC-SR04 ultrasonic distance rangefinder",
+      "WS2812B high-brightness RGB status indicator dome",
+      "ESP32 dual-core microcontroller with WiFi/BLE telemetry",
+      "0.96 inch I2C SSD1306 OLED bay status panel",
+      "Piezo acoustic reverse warning buzzer",
+      "12V DC input with onboard step-down buck converter"
+    ],
+    "outOfScope": [
+      "Automatic License Plate Recognition (ALPR) camera optical unit",
+      "Payment processing POS payment terminal",
+      "Motorized physical barrier gate actuation"
+    ]
+  },
+  "features": [
+    {
+      "id": "feature-vehicle-ranging",
+      "name": "Ultrasonic Bay Range Finding",
+      "description": "Emits 40kHz acoustic pulses to measure distance to vehicle roof or floor slab.",
+      "priority": "HIGH",
+      "roleIds": [
+        "role-parking-operator"
+      ],
+      "needsApi": false,
+      "needsUi": false,
+      "needsPersistence": false
+    },
+    {
+      "id": "feature-rgb-signaling",
+      "name": "Overhead RGB Beacon Guidance",
+      "description": "Illuminates ultra-bright green (vacant) or red (occupied) indicator ring for driver visibility.",
+      "priority": "HIGH",
+      "roleIds": [
+        "role-parking-operator"
+      ],
+      "needsApi": false,
+      "needsUi": false,
+      "needsPersistence": false
+    },
+    {
+      "id": "feature-oled-telemetry",
+      "name": "Bay Status & Metric Display",
+      "description": "Shows live clearance distance, occupancy state, and assigned bay identifier.",
+      "priority": "MEDIUM",
+      "roleIds": [
+        "role-parking-operator"
+      ],
+      "needsApi": false,
+      "needsUi": false,
+      "needsPersistence": false
+    },
+    {
+      "id": "feature-proximity-alarm",
+      "name": "Over-Height Acoustic Warning",
+      "description": "Sounds intermittent buzzer alert if a high-profile vehicle approaches ceiling hazard threshold.",
+      "priority": "MEDIUM",
+      "roleIds": [
+        "role-parking-operator"
+      ],
+      "needsApi": false,
+      "needsUi": false,
+      "needsPersistence": false
+    }
+  ],
+  "roles": [
+    {
+      "id": "role-parking-operator",
+      "name": "Garage Operations Engineer",
+      "description": "Configures parking bay ceiling height thresholds and monitors bay occupancy metrics.",
+      "permissions": [
+        "configure_bay_thresholds",
+        "inspect_live_distance",
+        "run_beacon_diagnostic"
+      ],
+      "interactive": true
+    }
+  ],
+  "requirements": [
+    {
+      "id": "req-sonar-accuracy",
+      "type": "FUNCTIONAL",
+      "description": "Ultrasonic sensor shall sample distance at 5Hz with accuracy within ±1cm.",
+      "featureIds": [
+        "feature-vehicle-ranging"
+      ],
+      "acceptanceCriteria": [
+        "Sample filtering algorithm rejects false transient echoes",
+        "Latency under 200ms"
+      ],
+      "source": "USER_STATED"
+    },
+    {
+      "id": "req-rgb-states",
+      "type": "FUNCTIONAL",
+      "description": "RGB indicator shall support GREEN (vacant), RED (occupied), and BLUE (reserved) modes.",
+      "featureIds": [
+        "feature-rgb-signaling"
+      ],
+      "acceptanceCriteria": [
+        "Color transition occurs synchronously with occupancy state change"
+      ],
+      "source": "USER_STATED"
+    }
+  ],
+  "estimates": {
+    "difficulty": "EASY",
+    "estimatedDuration": "3–5 weeks",
+    "recommendedTeamSize": 2,
+    "teamRoles": [
+      {
+        "role": "Hardware Electronics Engineer",
+        "count": 1,
+        "responsibility": "Schematic design, breadboard circuit assembly, component sourcing, and enclosure modeling"
+      },
+      {
+        "role": "Embedded Firmware Engineer",
+        "count": 1,
+        "responsibility": "ESP32 C++/Arduino firmware, ADC filtering algorithms, and I2C display drivers"
+      }
+    ],
+    "estimatedCost": {
+      "currency": "USD",
+      "minimum": 45,
+      "maximum": 120,
+      "basis": "Prototyping components, breadboard, custom 3D printed enclosure, and 5V power adapter.",
+      "disclaimer": "Approximate estimate based on the supplied requirements."
+    },
+    "resources": [
+      {
+        "name": "Electronics Prototyping Bench",
+        "type": "HARDWARE",
+        "purpose": "Soldering, breadboarding, and digital multimeter testing"
+      },
+      {
+        "name": "3D Printer (PETG Filament)",
+        "type": "HARDWARE",
+        "purpose": "Fabricating ventilated enclosure chassis"
+      }
+    ]
+  },
+  "software": {
+    "applicable": false
+  },
+  "hardware": {
+    "applicable": true,
+    "workingPrinciple": "Overhead ultrasonic transducer fires periodic sonic bursts towards the parking bay floor. When a vehicle occupies the slot, reflected pulse transit time drops significantly. The ESP32 parses distance thresholds, drives the WS2812B RGB light ring green/red, and outputs bay statistics over I2C to the OLED screen.",
+    "architecture": {
+      "controllerArchitecture": "ESP32 Tensilica Dual-Core 32-bit MCU (240MHz)",
+      "sensorSubsystems": [
+        "Ultrasonic Distance Transceiver (HC-SR04/RCWL-1601)"
+      ],
+      "actuatorSubsystems": [
+        "WS2812B NeoPixel RGB Guidance Ring",
+        "Acoustic Warning Buzzer"
+      ],
+      "displaySubsystems": [
+        "0.96 inch SSD1306 Monochrome I2C OLED (128x64)"
+      ],
+      "powerArchitecture": "12V DC input stepped down to 5.0V via LM2596 buck regulator, with secondary 3.3V LDO for ESP32/OLED."
+    },
+    "components": [
+      {
+        "id": "comp-esp32",
+        "name": "ESP32 DevKit V1 Microcontroller",
+        "category": "MICROCONTROLLER",
+        "purpose": "Main processing unit for distance timing, RGB animation, and OLED driving",
+        "quantity": 1,
+        "specification": "Dual-core Xtensa 240MHz, 520KB SRAM, 4MB Flash, WiFi & BLE",
+        "estimatedUnitCost": "$5.50",
+        "estimatedTotalCost": "$5.50"
+      },
+      {
+        "id": "comp-ultrasonic",
+        "name": "HC-SR04 Ultrasonic Distance Sensor",
+        "category": "SENSOR",
+        "purpose": "Continuous downward distance measurement to detect vehicle presence",
+        "quantity": 1,
+        "specification": "40kHz acoustic burst, 2cm-400cm range, 5V supply, 15mA current",
+        "estimatedUnitCost": "$2.20",
+        "estimatedTotalCost": "$2.20"
+      },
+      {
+        "id": "comp-rgb-led",
+        "name": "WS2812B NeoPixel RGB LED Ring",
+        "category": "ACTUATOR",
+        "purpose": "High-intensity green/red/blue visual status beacon for motorists",
+        "quantity": 1,
+        "specification": "8-LED circular ring, single-wire digital control, 5V supply, 60mA/LED peak",
+        "estimatedUnitCost": "$3.80",
+        "estimatedTotalCost": "$3.80"
+      },
+      {
+        "id": "comp-piezo",
+        "name": "Active Piezo Warning Buzzer",
+        "category": "ACTUATOR",
+        "purpose": "Acoustic obstacle and ceiling height breach alert",
+        "quantity": 1,
+        "specification": "5V active buzzer, 85dB SPL at 10cm, 2.3kHz resonant frequency",
+        "estimatedUnitCost": "$0.80",
+        "estimatedTotalCost": "$0.80"
+      },
+      {
+        "id": "comp-oled",
+        "name": "0.96 inch SSD1306 OLED Display",
+        "category": "DISPLAY",
+        "purpose": "Local bay identifier and metric telemetry readout",
+        "quantity": 1,
+        "specification": "128x64 pixels, I2C address 0x3C, 3.3V logic, monochrome white",
+        "estimatedUnitCost": "$3.50",
+        "estimatedTotalCost": "$3.50"
+      },
+      {
+        "id": "comp-power",
+        "name": "12V to 5V DC Buck Converter & Barrel Jack",
+        "category": "POWER",
+        "purpose": "Steps down central garage 12V DC bus to regulated 5V system rail",
+        "quantity": 1,
+        "specification": "LM2596 buck converter, 12V input, 5V 2A output with thermal shutdown",
+        "estimatedUnitCost": "$2.80",
+        "estimatedTotalCost": "$2.80"
+      }
+    ],
+    "controllers": [
+      {
+        "id": "ctrl-esp32",
+        "name": "ESP32 DevKit V1",
+        "type": "MCU",
+        "clockSpeed": "240MHz",
+        "flashMemory": "4MB",
+        "ram": "520KB",
+        "gpioCount": 30,
+        "communicationBuses": [
+          "I2C",
+          "SPI",
+          "UART",
+          "WiFi",
+          "BLE"
+        ]
+      }
+    ],
+    "sensors": [
+      {
+        "id": "sens-sonar",
+        "name": "HC-SR04 Ultrasonic Sensor",
+        "type": "Acoustic Rangefinder",
+        "interface": "Digital Trigger & Echo Pulse",
+        "measurementRange": "2cm to 400cm",
+        "accuracy": "±3mm",
+        "samplingRate": "5 Hz"
+      }
+    ],
+    "actuators": [
+      {
+        "id": "act-rgb",
+        "name": "WS2812B NeoPixel Ring",
+        "type": "Individually Addressable RGB LED",
+        "driveSignal": "Single-wire NRZ 800kHz pulse timing",
+        "maxCurrent": "240mA"
+      },
+      {
+        "id": "act-buzzer",
+        "name": "Active Piezo Buzzer",
+        "type": "Acoustic Transducer",
+        "driveSignal": "Digital GPIO HIGH/LOW",
+        "maxCurrent": "25mA"
+      }
+    ],
+    "communicationModules": [
+      {
+        "id": "comm-wifi",
+        "name": "ESP32 2.4GHz WiFi",
+        "protocol": "IEEE 802.11 b/g/n",
+        "purpose": "Transmits bay occupancy JSON state packets to central garage broker"
+      }
+    ],
+    "powerRequirements": {
+      "operatingVoltage": "5.0V DC main rail, 3.3V logic rail",
+      "powerSource": "Central 12V DC garage line stepped down locally to 5V 2A",
+      "estimatedCurrentDraw": "Nominal 110mA; Peak 310mA with all RGB LEDs illuminated"
+    },
+    "pinConnections": [
+      "ESP32 Vin <-> 5V DC Regulator Rail",
+      "ESP32 GND <-> Common System Ground",
+      "ESP32 GPIO5 <-> HC-SR04 Ultrasonic Trigger",
+      "ESP32 GPIO18 <-> HC-SR04 Ultrasonic Echo (via 1k/2k voltage divider)",
+      "ESP32 GPIO19 <-> WS2812B RGB Data Input (DIN)",
+      "ESP32 GPIO21 (SDA) <-> SSD1306 OLED SDA",
+      "ESP32 GPIO22 (SCL) <-> SSD1306 OLED SCL",
+      "ESP32 GPIO23 <-> Active Piezo Buzzer Positive Pin"
+    ],
+    "connections": [
+      {
+        "id": "conn-pwr-esp",
+        "fromComponentId": "comp-power",
+        "fromPin": "5V_OUT",
+        "toComponentId": "comp-esp32",
+        "toPin": "VIN",
+        "signalType": "POWER",
+        "voltage": "5.0V",
+        "purpose": "Powers ESP32 MCU module"
+      },
+      {
+        "id": "conn-gnd-esp",
+        "fromComponentId": "comp-power",
+        "fromPin": "GND",
+        "toComponentId": "comp-esp32",
+        "toPin": "GND",
+        "signalType": "GROUND",
+        "voltage": "0V",
+        "purpose": "System ground reference"
+      },
+      {
+        "id": "conn-pwr-sonar",
+        "fromComponentId": "comp-power",
+        "fromPin": "5V_OUT",
+        "toComponentId": "comp-ultrasonic",
+        "toPin": "VCC",
+        "signalType": "POWER",
+        "voltage": "5.0V",
+        "purpose": "Power HC-SR04 ultrasonic sensor"
+      },
+      {
+        "id": "conn-gnd-sonar",
+        "fromComponentId": "comp-power",
+        "fromPin": "GND",
+        "toComponentId": "comp-ultrasonic",
+        "toPin": "GND",
+        "signalType": "GROUND",
+        "voltage": "0V",
+        "purpose": "Sensor ground"
+      },
+      {
+        "id": "conn-trig-sonar",
+        "fromComponentId": "comp-esp32",
+        "fromPin": "GPIO5",
+        "toComponentId": "comp-ultrasonic",
+        "toPin": "TRIG",
+        "signalType": "DIGITAL_OUT",
+        "voltage": "3.3V",
+        "purpose": "10us ultrasonic pulse trigger"
+      },
+      {
+        "id": "conn-echo-sonar",
+        "fromComponentId": "comp-ultrasonic",
+        "fromPin": "ECHO",
+        "toComponentId": "comp-esp32",
+        "toPin": "GPIO18",
+        "signalType": "DIGITAL_IN",
+        "voltage": "3.3V",
+        "purpose": "Pulse duration return proportional to target distance"
+      },
+      {
+        "id": "conn-pwr-rgb",
+        "fromComponentId": "comp-power",
+        "fromPin": "5V_OUT",
+        "toComponentId": "comp-rgb-led",
+        "toPin": "VCC",
+        "signalType": "POWER",
+        "voltage": "5.0V",
+        "purpose": "Power WS2812B NeoPixel ring"
+      },
+      {
+        "id": "conn-gnd-rgb",
+        "fromComponentId": "comp-power",
+        "fromPin": "GND",
+        "toComponentId": "comp-rgb-led",
+        "toPin": "GND",
+        "signalType": "GROUND",
+        "voltage": "0V",
+        "purpose": "RGB LED ground"
+      },
+      {
+        "id": "conn-din-rgb",
+        "fromComponentId": "comp-esp32",
+        "fromPin": "GPIO19",
+        "toComponentId": "comp-rgb-led",
+        "toPin": "DIN",
+        "signalType": "DIGITAL_OUT",
+        "voltage": "3.3V",
+        "purpose": "High-speed NRZ RGB color control stream"
+      },
+      {
+        "id": "conn-pwr-oled",
+        "fromComponentId": "comp-esp32",
+        "fromPin": "3V3",
+        "toComponentId": "comp-oled",
+        "toPin": "VCC",
+        "signalType": "POWER",
+        "voltage": "3.3V",
+        "purpose": "Power OLED logic and panel"
+      },
+      {
+        "id": "conn-gnd-oled",
+        "fromComponentId": "comp-esp32",
+        "fromPin": "GND",
+        "toComponentId": "comp-oled",
+        "toPin": "GND",
+        "signalType": "GROUND",
+        "voltage": "0V",
+        "purpose": "OLED ground"
+      },
+      {
+        "id": "conn-sda-oled",
+        "fromComponentId": "comp-esp32",
+        "fromPin": "GPIO21",
+        "toComponentId": "comp-oled",
+        "toPin": "SDA",
+        "signalType": "I2C_DATA",
+        "voltage": "3.3V",
+        "purpose": "I2C Serial Data"
+      },
+      {
+        "id": "conn-scl-oled",
+        "fromComponentId": "comp-esp32",
+        "fromPin": "GPIO22",
+        "toComponentId": "comp-oled",
+        "toPin": "SCL",
+        "signalType": "I2C_CLOCK",
+        "voltage": "3.3V",
+        "purpose": "I2C Serial Clock"
+      },
+      {
+        "id": "conn-sig-buzzer",
+        "fromComponentId": "comp-esp32",
+        "fromPin": "GPIO23",
+        "toComponentId": "comp-piezo",
+        "toPin": "POSITIVE",
+        "signalType": "DIGITAL_OUT",
+        "voltage": "3.3V",
+        "purpose": "Triggers acoustic alert"
+      },
+      {
+        "id": "conn-gnd-buzzer",
+        "fromComponentId": "comp-esp32",
+        "fromPin": "GND",
+        "toComponentId": "comp-piezo",
+        "toPin": "NEGATIVE",
+        "signalType": "GROUND",
+        "voltage": "0V",
+        "purpose": "Buzzer ground"
+      }
+    ],
+    "firmwareLogic": {
+      "mainLoopDescription": "Triggers ultrasonic sensor at 5Hz. Filters returned distance through a 5-point median filter. If distance is between 30cm and 220cm for >3 seconds, classifies bay as OCCUPIED (sets RGB to RED). Otherwise, classifies as VACANT (sets RGB to GREEN). Updates OLED display with bay ID, live distance, and occupancy icon.",
+      "setupSteps": [
+        "Initialize GPIO5 as OUTPUT (Trig) and GPIO18 as INPUT (Echo)",
+        "Initialize FastLED / NeoPixel driver on GPIO19",
+        "Initialize I2C bus and SSD1306 OLED screen at 0x3C",
+        "Set GPIO23 as OUTPUT (Buzzer)",
+        "Perform power-on self-test (sweep RGB red-green-blue)"
+      ],
+      "safetyNotes": [
+        "Use 5V-to-3.3V resistive divider on HC-SR04 Echo line to prevent overvoltage on ESP32 GPIO18",
+        "Ensure overhead ceiling mount is anchored securely above vehicular vibration zones"
+      ]
+    },
+    "diagrams": {
+      "systemBlockMermaid": "graph TD\n    PWR[12V-to-5V Buck Converter] --> ESP[ESP32 Microcontroller]\n    PWR --> SONAR[HC-SR04 Ultrasonic Sensor]\n    PWR --> RGB[WS2812B RGB NeoPixel Ring]\n    ESP -->|Trig/Echo GPIO5/18| SONAR\n    ESP -->|Data GPIO19| RGB\n    ESP -->|I2C GPIO21/22| OLED[SSD1306 OLED Display]\n    ESP -->|GPIO23 Digital| BUZZ[Piezo Buzzer]"
+    },
+    "enclosure": {
+      "type": "Overhead Bay Ceiling-Mount Enclosure",
+      "material": "Flame-Retardant ABS with Clear Optical Diffuser Dome",
+      "dimensions": "130mm x 50mm x 90mm",
+      "protectionRating": "IP54 dust and splash resistant"
+    },
+    "enclosureConcept": {
+      "type": "OVERHEAD_BAY",
+      "name": "Ceiling-Mount Parking Bay Enclosure",
+      "material": "Flame-Retardant ABS with Clear Optical Diffuser Dome",
+      "dimensions": "130mm x 50mm x 90mm",
+      "protectionRating": "IP54 dust and splash resistant"
+    },
+    "threeDModel": {
+      "generated": true,
+      "enclosure": {
+        "type": "OVERHEAD_BAY",
+        "dimensions": [
+          130,
+          50,
+          90
+        ],
+        "color": "#1e293b",
+        "opacity": 0.35,
+        "wireframe": false
+      },
+      "components": [
+        {
+          "componentId": "comp-esp32",
+          "primitiveType": "BOARD",
+          "dimensions": [
+            55,
+            6,
+            28
+          ],
+          "position": [
+            0,
+            5,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "color": "#065f46",
+          "label": "ESP32 Controller"
+        },
+        {
+          "componentId": "comp-ultrasonic",
+          "primitiveType": "SENSOR_MODULE",
+          "dimensions": [
+            45,
+            20,
+            18
+          ],
+          "position": [
+            0,
+            24,
+            25
+          ],
+          "rotation": [
+            180,
+            0,
+            0
+          ],
+          "color": "#0284c7",
+          "label": "HC-SR04 Sonar (Downward)"
+        },
+        {
+          "componentId": "comp-rgb-led",
+          "primitiveType": "LED",
+          "dimensions": [
+            22,
+            16,
+            22
+          ],
+          "position": [
+            -35,
+            26,
+            -15
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "color": "#10b981",
+          "label": "WS2812B RGB Beacon Dome"
+        },
+        {
+          "componentId": "comp-piezo",
+          "primitiveType": "BUZZER",
+          "dimensions": [
+            16,
+            12,
+            16
+          ],
+          "position": [
+            35,
+            14,
+            -20
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "color": "#18181b",
+          "label": "Acoustic Warning Buzzer"
+        },
+        {
+          "componentId": "comp-oled",
+          "primitiveType": "DISPLAY_PANEL",
+          "dimensions": [
+            38,
+            7,
+            26
+          ],
+          "position": [
+            0,
+            22,
+            -22
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "color": "#38bdf8",
+          "label": "0.96 inch Bay OLED"
+        },
+        {
+          "componentId": "comp-power",
+          "primitiveType": "CONNECTOR",
+          "dimensions": [
+            28,
+            14,
+            18
+          ],
+          "position": [
+            -42,
+            8,
+            25
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "color": "#f59e0b",
+          "label": "12V Buck Converter Jack"
+        }
+      ]
+    }
+  },
+  "roadmap": [
+    {
+      "id": "phase-sonar-tuning",
+      "title": "Phase 1: Ultrasonic Calibration & Echo Filtering",
+      "description": "Interface HC-SR04 with ESP32 and calibrate distance thresholds for garage heights.",
+      "featureIds": [
+        "feature-vehicle-ranging"
+      ],
+      "tasks": [
+        "Implement interrupt-driven ultrasonic pulse timing",
+        "Implement 5-sample median filter to eliminate false spikes",
+        "Calibrate empty bay vs vehicle presence thresholds"
+      ],
+      "dependsOnPhaseIds": [],
+      "completionCriteria": [
+        "Stable distance telemetry output over serial stream"
+      ]
+    },
+    {
+      "id": "phase-rgb-oled",
+      "title": "Phase 2: RGB Visual Guidance & OLED Dashboard",
+      "description": "Integrate WS2812B NeoPixel ring color animations and SSD1306 bay status screen.",
+      "featureIds": [
+        "feature-rgb-signaling",
+        "feature-oled-telemetry"
+      ],
+      "tasks": [
+        "Program state machine for Vacant (Green), Occupied (Red), and Fault (Flashing Yellow)",
+        "Design OLED bay identifier and distance graphic layout",
+        "Connect piezo buzzer for over-height warning pulses"
+      ],
+      "dependsOnPhaseIds": [
+        "phase-sonar-tuning"
+      ],
+      "completionCriteria": [
+        "Visual indicators reflect bay occupancy seamlessly in real time"
+      ]
+    },
+    {
+      "id": "phase-ceiling-enclosure",
+      "title": "Phase 3: Ceiling Mount Enclosure & Garage Trial",
+      "description": "Mount into flame-retardant overhead casing with optical diffuser and run 48-hour garage test.",
+      "featureIds": [
+        "feature-vehicle-ranging",
+        "feature-rgb-signaling"
+      ],
+      "tasks": [
+        "Assemble PCB, sonar transceiver, and RGB ring in ceiling-mount housing",
+        "Connect 12V garage power rail through step-down converter",
+        "Perform 48-hour continuous vehicle entry/exit validation"
+      ],
+      "dependsOnPhaseIds": [
+        "phase-rgb-oled"
+      ],
+      "completionCriteria": [
+        "100% occupancy detection accuracy across test parking cycles"
+      ]
+    }
+  ],
+  "assumptions": [
+    {
+      "id": "asm-ceiling-height",
+      "description": "Ceiling height above parking slot is between 2.2m and 3.5m.",
+      "affectedEntityIds": [
+        "comp-ultrasonic",
+        "feature-vehicle-ranging"
+      ],
+      "reason": "Within optimal HC-SR04 sonar detection cone and reflective gain."
+    }
+  ],
+  "openQuestions": [
+    {
+      "id": "q-garage-lighting",
+      "question": "Will the parking facility require ambient light level adaptation for daytime vs nighttime beacon brightness?",
+      "affectedEntityIds": [
+        "comp-rgb-led",
+        "feature-rgb-signaling"
+      ],
+      "whyItMatters": "May require an optional photoresistor (LDR) to dim LEDs at night."
+    }
+  ],
+  "risks": [
+    {
+      "id": "risk-heater-burnin",
+      "title": "Sensor Drift During Initial Heating",
+      "severity": "MEDIUM",
+      "mitigation": "Include software lockout requiring 24 hours of burn-in heating before saving baseline calibration."
+    },
+    {
+      "id": "risk-silicone-poisoning",
+      "title": "Sensor Poisoning from Aerosols",
+      "severity": "HIGH",
+      "mitigation": "Clearly label enclosure warnings against using silicone adhesives, hairspray, or VOC cleaners near unit."
+    }
+  ],
+  "recommendations": [
+    {
+      "id": "rec-backup-battery",
+      "category": "FUTURE_FEATURE",
+      "title": "LiPo Battery Backup with Charger IC",
+      "description": "Consider adding a single-cell LiPo battery and TP4056 charging IC for 2-hour backup during power outages."
+    }
+  ]
+}

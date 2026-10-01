@@ -1,0 +1,713 @@
+{
+  "schemaVersion": "2.0",
+  "projectType": "HARDWARE",
+  "classification": {
+    "type": "HARDWARE",
+    "reason": "Project primarily focuses on physical circuit design, embedded controller selection, sensors/actuators, and wiring connections.",
+    "confidence": "HIGH"
+  },
+  "overview": {
+    "projectName": "RoverNav — Autonomous Sonar Obstacle-Avoidance Robotic Vehicle",
+    "summary": "RoverNav is an educational two-wheel differential drive mobile robot platform designed to autonomously navigate cluttered indoor terrain using forward ultrasonic sonar scanning and high-torque DC gear motors.",
+    "problemStatement": "Introductory robotics students struggle with the complex integration gap between ultrasonic range finding, motor driver H-bridge PWM steering logic, and power isolation.",
+    "targetUsers": [
+      "Robotics & Mechatronics Students",
+      "STEM Workshop Educators",
+      "Autonomous Systems Hobbyists"
+    ],
+    "goals": [
+      "Continuously sweep front obstacle distance using a servo-mounted ultrasonic sensor",
+      "Execute responsive differential steering maneuvers to avoid objects closer than 20cm",
+      "Provide independent high-current motor power rails protected against back-EMF spikes"
+    ],
+    "scope": [
+      "HC-SR04 ultrasonic rangefinder mounted on SG90 sweep micro-servo",
+      "L298N dual H-bridge motor driver with finned aluminum heatsink",
+      "Dual 1:48 TT DC gear motors with 65mm rubber tread drive wheels",
+      "Dual-deck smoked acrylic mobile chassis with front omni-directional caster ball",
+      "2x 18650 7.4V rechargeable battery pack with power rocker switch",
+      "Arduino Uno R3 central microcontroller with motor shield"
+    ],
+    "outOfScope": [
+      "SLAM LiDAR 2D room mapping",
+      "Computer vision camera object detection",
+      "Outdoor GPS waypoint navigation"
+    ]
+  },
+  "features": [
+    {
+      "id": "feature-sonar-sweep",
+      "name": "Dynamic Sonar Distance Sweeping",
+      "description": "Pans an ultrasonic sensor left-center-right using a micro-servo to calculate clear heading vectors.",
+      "priority": "HIGH",
+      "roleIds": [
+        "role-robot-programmer"
+      ],
+      "needsApi": false,
+      "needsUi": false,
+      "needsPersistence": false
+    },
+    {
+      "id": "feature-differential-drive",
+      "name": "Dual H-Bridge Differential Steering Control",
+      "description": "Generates synchronized pulse-width modulation (PWM) signals to control left and right motor speed and direction.",
+      "priority": "HIGH",
+      "roleIds": [
+        "role-robot-programmer"
+      ],
+      "needsApi": false,
+      "needsUi": false,
+      "needsPersistence": false
+    },
+    {
+      "id": "feature-wheel-encoders",
+      "name": "Optical Wheel Odometry Tracking",
+      "description": "Counts slotted wheel revolutions using infrared optical encoders to calculate vehicle travel distance.",
+      "priority": "MEDIUM",
+      "roleIds": [
+        "role-robot-programmer"
+      ],
+      "needsApi": false,
+      "needsUi": false,
+      "needsPersistence": false
+    },
+    {
+      "id": "feature-emergency-stop",
+      "name": "Autonomous Obstacle Safe-Braking",
+      "description": "Cuts motor drive immediately if an obstacle suddenly appears within critical 10cm emergency threshold.",
+      "priority": "HIGH",
+      "roleIds": [
+        "role-robot-programmer"
+      ],
+      "needsApi": false,
+      "needsUi": false,
+      "needsPersistence": false
+    }
+  ],
+  "roles": [
+    {
+      "id": "role-robot-programmer",
+      "name": "Robotics Student Developer",
+      "description": "Tunes navigation avoidance algorithms, tests obstacle thresholds, and monitors battery charge.",
+      "permissions": [
+        "upload_navigation_firmware",
+        "calibrate_steering_trim",
+        "read_sonar_metrics"
+      ],
+      "interactive": true
+    }
+  ],
+  "requirements": [
+    {
+      "id": "req-sonar-range",
+      "type": "FUNCTIONAL",
+      "description": "Ultrasonic sonar sensor shall detect obstacles within a range of 2cm to 300cm with 3mm accuracy.",
+      "featureIds": [
+        "feature-sonar-sweep"
+      ],
+      "acceptanceCriteria": [
+        "Obstacle echo timing measured via hardware interrupt",
+        "Servo sweep cycle executes in under 400ms"
+      ],
+      "source": "USER_STATED"
+    },
+    {
+      "id": "req-motor-torque",
+      "type": "NON_FUNCTIONAL",
+      "description": "Gear motors must provide sufficient torque to propel a 600g chassis up a 15-degree incline.",
+      "featureIds": [
+        "feature-differential-drive"
+      ],
+      "acceptanceCriteria": [
+        "Differential turning radius under 20cm",
+        "Operating speed between 0.3m/s and 0.6m/s"
+      ],
+      "source": "USER_STATED"
+    },
+    {
+      "id": "req-back-emf-protection",
+      "type": "NON_FUNCTIONAL",
+      "description": "Motor driver circuit must incorporate flyback protection diodes to absorb inductive back-EMF spikes.",
+      "featureIds": [
+        "feature-differential-drive"
+      ],
+      "acceptanceCriteria": [
+        "Flyback diode clamping verified",
+        "Zero reset glitches on MCU power line during sudden motor stops"
+      ],
+      "source": "AI_ASSUMED"
+    }
+  ],
+  "estimates": {
+    "difficulty": "EASY",
+    "estimatedDuration": "3–5 weeks",
+    "recommendedTeamSize": 2,
+    "teamRoles": [
+      {
+        "role": "Hardware Electronics Engineer",
+        "count": 1,
+        "responsibility": "Schematic design, breadboard circuit assembly, component sourcing, and enclosure modeling"
+      },
+      {
+        "role": "Embedded Firmware Engineer",
+        "count": 1,
+        "responsibility": "ESP32 C++/Arduino firmware, ADC filtering algorithms, and I2C display drivers"
+      }
+    ],
+    "estimatedCost": {
+      "currency": "USD",
+      "minimum": 45,
+      "maximum": 120,
+      "basis": "Prototyping components, breadboard, custom 3D printed enclosure, and 5V power adapter.",
+      "disclaimer": "Approximate estimate based on the supplied requirements."
+    },
+    "resources": [
+      {
+        "name": "Electronics Prototyping Bench",
+        "type": "HARDWARE",
+        "purpose": "Soldering, breadboarding, and digital multimeter testing"
+      },
+      {
+        "name": "3D Printer (PETG Filament)",
+        "type": "HARDWARE",
+        "purpose": "Fabricating ventilated enclosure chassis"
+      }
+    ]
+  },
+  "software": {
+    "applicable": false
+  },
+  "hardware": {
+    "applicable": true,
+    "workingPrinciple": "Arduino Uno triggers 10us ultrasonic burst from HC-SR04; echo pulse duration calculates distance. If forward clearance is under 20cm, SG90 servo pans 60 degrees left and right to evaluate alternative paths, then drives the L298N H-bridge with PWM to execute an in-place pivot turn.",
+    "components": [
+      {
+        "id": "comp-arduino",
+        "name": "Arduino Uno R3 Microcontroller Board",
+        "category": "MICROCONTROLLER",
+        "purpose": "8-bit AVR central controller executing navigation loop, pulse timing, and motor PWM logic",
+        "quantity": 1,
+        "specification": "ATmega328P, 16MHz clock, 14 digital I/O (6 PWM), 6 analog inputs, 5V logic",
+        "alternatives": [
+          "ESP32 DevKit V1",
+          "Arduino Nano Every"
+        ],
+        "estimatedUnitCost": 5.2,
+        "estimatedTotalCost": 5.2
+      },
+      {
+        "id": "comp-l298n",
+        "name": "L298N Dual H-Bridge Motor Driver Module",
+        "category": "ACTUATOR",
+        "purpose": "Controls speed and direction of two high-current DC gear motors with aluminum heatsink",
+        "quantity": 1,
+        "specification": "Dual H-bridge, 2A peak per channel, 5V-35V motor voltage, onboard 5V regulator, flyback protection",
+        "alternatives": [
+          "TB6612FNG Dual Motor Driver",
+          "DRV8833 Low Voltage Driver"
+        ],
+        "estimatedUnitCost": 3.8,
+        "estimatedTotalCost": 3.8
+      },
+      {
+        "id": "comp-hcsr04",
+        "name": "HC-SR04 Ultrasonic Sonar Distance Sensor",
+        "category": "SENSOR",
+        "purpose": "Measures distance to front obstacles via 40kHz acoustic echo time-of-flight",
+        "quantity": 1,
+        "specification": "2cm to 400cm range, 15 degree measurement angle, 5V operating voltage",
+        "alternatives": [
+          "TF-Luna Micro LiDAR",
+          "Sharp GP2Y0A21YK0F Optical Distance Sensor"
+        ],
+        "estimatedUnitCost": 2.5,
+        "estimatedTotalCost": 2.5
+      },
+      {
+        "id": "comp-servo",
+        "name": "SG90 Micro Sweep Servo Motor",
+        "category": "ACTUATOR",
+        "purpose": "Pans the ultrasonic sensor across 180-degree sweep arc to scan surroundings",
+        "quantity": 1,
+        "specification": "9g weight, 1.8 kg-cm torque, 0.1s/60deg speed, 4.8V-6V operating range",
+        "alternatives": [
+          "MG90S Metal Gear Servo",
+          "Standard 180-Degree Micro Servo"
+        ],
+        "estimatedUnitCost": 2.2,
+        "estimatedTotalCost": 2.2
+      },
+      {
+        "id": "comp-motor-left",
+        "name": "Left TT Gear Motor & 65mm Rubber Tread Tire",
+        "category": "ACTUATOR",
+        "purpose": "High-torque 1:48 gear motor driving left chassis side",
+        "quantity": 1,
+        "specification": "3V-6V DC, 1:48 reduction gearbox, 200 RPM @ 6V, 65mm diameter rubber tire",
+        "alternatives": [
+          "Metal Gear N20 Motor",
+          "Continuous Rotation Servo Wheel"
+        ],
+        "estimatedUnitCost": 3,
+        "estimatedTotalCost": 3
+      },
+      {
+        "id": "comp-motor-right",
+        "name": "Right TT Gear Motor & 65mm Rubber Tread Tire",
+        "category": "ACTUATOR",
+        "purpose": "High-torque 1:48 gear motor driving right chassis side",
+        "quantity": 1,
+        "specification": "3V-6V DC, 1:48 reduction gearbox, 200 RPM @ 6V, 65mm diameter rubber tire",
+        "alternatives": [
+          "Metal Gear N20 Motor",
+          "Continuous Rotation Servo Wheel"
+        ],
+        "estimatedUnitCost": 3,
+        "estimatedTotalCost": 3
+      },
+      {
+        "id": "comp-battery",
+        "name": "2x 18650 7.4V Li-ion Battery Holder Pack",
+        "category": "POWER",
+        "purpose": "Provides 7.4V high-drain power to motors and Arduino VIN jack",
+        "quantity": 1,
+        "specification": "Dual series 18650 cell holder, 7.4V nominal output, integrated rocker on/off switch",
+        "alternatives": [
+          "6x AA 9V Battery Holder",
+          "2S 7.4V 1500mAh RC LiPo Pack"
+        ],
+        "estimatedUnitCost": 4.8,
+        "estimatedTotalCost": 4.8
+      },
+      {
+        "id": "comp-encoder",
+        "name": "Dual Optical Wheel Speed Encoder Sensors",
+        "category": "SENSOR",
+        "purpose": "Measures wheel rotation ticks for straight-line navigation and dead reckoning",
+        "quantity": 1,
+        "specification": "Slotted optical IR phototransistor, digital pulse output, 20-slot encoder disc",
+        "alternatives": [
+          "Hall Effect Magnetic Encoders",
+          "Optical Mouse Sensor"
+        ],
+        "estimatedUnitCost": 2.4,
+        "estimatedTotalCost": 2.4
+      }
+    ],
+    "controllers": [
+      "Arduino Uno R3 ATmega328P 16MHz"
+    ],
+    "sensors": [
+      "HC-SR04 Ultrasonic Sonar Module",
+      "Optical Wheel Encoders"
+    ],
+    "actuators": [
+      "L298N Dual Motor Driver",
+      "Dual TT Gear Motors",
+      "SG90 Micro Servo"
+    ],
+    "communicationModules": [
+      "USB Serial Programming & Telemetry Port"
+    ],
+    "powerRequirements": {
+      "voltageRail": "7.4V unregulated motor supply; 5.0V regulated microcontroller and sensor supply",
+      "powerSource": "Dual 18650 7.4V Li-ion rechargeable battery pack",
+      "estimatedCurrentDraw": "Nominal 350mA cruising; Peak 1.2A during stall / rapid pivot turns"
+    },
+    "pinConnections": [
+      "Arduino 5V Pin <-> HC-SR04 and SG90 VCC",
+      "Arduino GND Pin <-> Common System Ground",
+      "Arduino D7 <-> HC-SR04 Trigger Pin",
+      "Arduino D8 <-> HC-SR04 Echo Pin",
+      "Arduino D6 (PWM) <-> SG90 Servo Signal",
+      "Arduino D9 (PWM) <-> L298N ENA (Left Speed)",
+      "Arduino D10 (PWM) <-> L298N ENB (Right Speed)",
+      "Arduino D2 / D3 <-> L298N IN1 / IN2 (Left Direction)",
+      "Arduino D4 / D5 <-> L298N IN3 / IN4 (Right Direction)",
+      "Battery 7.4V (+) <-> L298N 12V Screw Terminal and Arduino VIN"
+    ],
+    "connections": [
+      {
+        "id": "conn-sonar-trig",
+        "fromComponentId": "comp-arduino",
+        "fromPin": "D7",
+        "toComponentId": "comp-hcsr04",
+        "toPin": "TRIG",
+        "signalType": "DIGITAL_OUT",
+        "voltage": "5.0V",
+        "purpose": "10us ultrasonic pulse trigger"
+      },
+      {
+        "id": "conn-sonar-echo",
+        "fromComponentId": "comp-hcsr04",
+        "fromPin": "ECHO",
+        "toComponentId": "comp-arduino",
+        "toPin": "D8",
+        "signalType": "DIGITAL_IN",
+        "voltage": "5.0V",
+        "purpose": "Echo pulse width proportional to target distance"
+      },
+      {
+        "id": "conn-servo-pwm",
+        "fromComponentId": "comp-arduino",
+        "fromPin": "D6",
+        "toComponentId": "comp-servo",
+        "toPin": "PWM",
+        "signalType": "PWM",
+        "voltage": "5.0V",
+        "purpose": "50Hz PWM signal for servo angle positioning"
+      },
+      {
+        "id": "conn-motor-left-a",
+        "fromComponentId": "comp-l298n",
+        "fromPin": "OUT1",
+        "toComponentId": "comp-motor-left",
+        "toPin": "M+",
+        "signalType": "POWER",
+        "voltage": "7.4V",
+        "purpose": "High-current H-bridge drive to left gear motor"
+      },
+      {
+        "id": "conn-motor-left-b",
+        "fromComponentId": "comp-l298n",
+        "fromPin": "OUT2",
+        "toComponentId": "comp-motor-left",
+        "toPin": "M-",
+        "signalType": "POWER",
+        "voltage": "7.4V",
+        "purpose": "Return line for left motor bidirectional control"
+      },
+      {
+        "id": "conn-motor-right-a",
+        "fromComponentId": "comp-l298n",
+        "fromPin": "OUT3",
+        "toComponentId": "comp-motor-right",
+        "toPin": "M+",
+        "signalType": "POWER",
+        "voltage": "7.4V",
+        "purpose": "High-current H-bridge drive to right gear motor"
+      },
+      {
+        "id": "conn-motor-right-b",
+        "fromComponentId": "comp-l298n",
+        "fromPin": "OUT4",
+        "toComponentId": "comp-motor-right",
+        "toPin": "M-",
+        "signalType": "POWER",
+        "voltage": "7.4V",
+        "purpose": "Return line for right motor bidirectional control"
+      },
+      {
+        "id": "conn-battery-pwr",
+        "fromComponentId": "comp-battery",
+        "fromPin": "7V4_OUT",
+        "toComponentId": "comp-l298n",
+        "toPin": "VMS",
+        "signalType": "POWER",
+        "voltage": "7.4V",
+        "purpose": "High-current battery rail feeding L298N motor bridges"
+      }
+    ],
+    "enclosure": {
+      "type": "ROBOTIC_CHASSIS",
+      "material": "Dual-Deck Smoked Acrylic Robotic Chassis with Integrated DC Motor Brackets",
+      "dimensions": "160mm x 120mm x 42mm",
+      "protectionRating": "Open mobile robotics platform with front bumper"
+    },
+    "enclosureConcept": {
+      "type": "ROBOTIC_CHASSIS",
+      "name": "Robotic Mobile Platform Chassis",
+      "material": "Dual-Deck Smoked Acrylic Robotic Chassis with Integrated DC Motor Brackets",
+      "dimensions": "160mm x 120mm x 42mm",
+      "protectionRating": "Open mobile robotics platform with front bumper"
+    },
+    "threeDModel": {
+      "generated": true,
+      "enclosure": {
+        "type": "ROBOTIC_CHASSIS",
+        "dimensions": [
+          160,
+          42,
+          120
+        ],
+        "color": "#1e3a8a",
+        "opacity": 0.35,
+        "wireframe": false
+      },
+      "components": [
+        {
+          "componentId": "comp-arduino",
+          "primitiveType": "BOARD",
+          "dimensions": [
+            65,
+            8,
+            50
+          ],
+          "position": [
+            0,
+            24,
+            -15
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "color": "#065f46",
+          "label": "Arduino Uno R3 Microcontroller"
+        },
+        {
+          "componentId": "comp-l298n",
+          "primitiveType": "BOARD",
+          "dimensions": [
+            45,
+            22,
+            45
+          ],
+          "position": [
+            0,
+            12,
+            -10
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "color": "#dc2626",
+          "label": "L298N Dual H-Bridge Motor Driver"
+        },
+        {
+          "componentId": "comp-hcsr04",
+          "primitiveType": "SENSOR_MODULE",
+          "dimensions": [
+            45,
+            18,
+            15
+          ],
+          "position": [
+            0,
+            20,
+            55
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "color": "#38bdf8",
+          "label": "HC-SR04 Ultrasonic Sonar Eyes"
+        },
+        {
+          "componentId": "comp-servo",
+          "primitiveType": "BOX",
+          "dimensions": [
+            22,
+            16,
+            12
+          ],
+          "position": [
+            0,
+            8,
+            48
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "color": "#2563eb",
+          "label": "SG90 Radar Sweep Servo"
+        },
+        {
+          "componentId": "comp-motor-left",
+          "primitiveType": "CYLINDER",
+          "dimensions": [
+            16,
+            45,
+            45
+          ],
+          "position": [
+            -65,
+            14,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            90
+          ],
+          "color": "#18181b",
+          "label": "Left TT Gear Motor & Rubber Tire"
+        },
+        {
+          "componentId": "comp-motor-right",
+          "primitiveType": "CYLINDER",
+          "dimensions": [
+            16,
+            45,
+            45
+          ],
+          "position": [
+            65,
+            14,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            90
+          ],
+          "color": "#18181b",
+          "label": "Right TT Gear Motor & Rubber Tire"
+        },
+        {
+          "componentId": "comp-battery",
+          "primitiveType": "BOX",
+          "dimensions": [
+            55,
+            20,
+            40
+          ],
+          "position": [
+            0,
+            10,
+            -45
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "color": "#334155",
+          "label": "2x 18650 7.4V Battery Pack"
+        },
+        {
+          "componentId": "comp-encoder",
+          "primitiveType": "SENSOR_MODULE",
+          "dimensions": [
+            15,
+            10,
+            12
+          ],
+          "position": [
+            -45,
+            10,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "color": "#10b981",
+          "label": "Optical Wheel Speed Encoder"
+        }
+      ]
+    }
+  },
+  "roadmap": [
+    {
+      "id": "phase-motor-drivetrain",
+      "title": "Phase 1: Drivetrain & Motor Controller Integration",
+      "description": "Mount TT gear motors on acrylic chassis and verify L298N bidirectional PWM speed control.",
+      "featureIds": [
+        "feature-differential-drive",
+        "feature-wheel-encoders"
+      ],
+      "tasks": [
+        "Mount DC gear motors, rubber wheels, and front caster ball",
+        "Wire L298N H-bridge to Arduino Uno PWM digital pins",
+        "Verify optical wheel encoder interrupts for odometry counting"
+      ],
+      "dependsOnPhaseIds": [],
+      "completionCriteria": [
+        "Rover executes forward, reverse, and spot-turn maneuvers under PWM control"
+      ]
+    },
+    {
+      "id": "phase-sonar-navigation",
+      "title": "Phase 2: Sonar Radar Sweep & Obstacle Avoidance",
+      "description": "Mount HC-SR04 on SG90 servo turret and implement reactive navigation algorithm.",
+      "featureIds": [
+        "feature-sonar-sweep",
+        "feature-emergency-stop"
+      ],
+      "tasks": [
+        "Mount ultrasonic sensor on servo pan-tilt bracket",
+        "Implement 180-degree radar sweep scanning routine",
+        "Program collision distance threshold state machine with safety stop"
+      ],
+      "dependsOnPhaseIds": [
+        "phase-motor-drivetrain"
+      ],
+      "completionCriteria": [
+        "Rover autonomously navigates around obstacles without physical collisions"
+      ]
+    },
+    {
+      "id": "phase-rover-integration",
+      "title": "Phase 3: Chassis Deck Stacking & Power Management",
+      "description": "Assemble upper smoked acrylic deck, 7.4V Li-ion pack, and run continuous navigation tests.",
+      "featureIds": [
+        "feature-differential-drive",
+        "feature-sonar-sweep"
+      ],
+      "tasks": [
+        "Fasten upper deck with brass standoffs and route wiring cleanly",
+        "Connect 2S 18650 battery holder with power switch and LM2596 buck",
+        "Perform 30-minute continuous obstacle avoidance navigation run"
+      ],
+      "dependsOnPhaseIds": [
+        "phase-sonar-navigation"
+      ],
+      "completionCriteria": [
+        "Rover operates smoothly for 30+ minutes on obstacle course"
+      ]
+    }
+  ],
+  "assumptions": [
+    {
+      "id": "asm-flat-terrain",
+      "description": "Rover operates primarily on indoor flat or low-pile carpeted terrain.",
+      "affectedEntityIds": [
+        "comp-motor-left",
+        "comp-motor-right"
+      ],
+      "reason": "Differential dual-wheel drive with caster is optimized for smooth planar surfaces."
+    }
+  ],
+  "openQuestions": [
+    {
+      "id": "q-remote-override",
+      "question": "Is manual remote control override (Bluetooth / IR) required in addition to autonomous mode?",
+      "affectedEntityIds": [
+        "comp-arduino",
+        "feature-emergency-stop"
+      ],
+      "whyItMatters": "Requires reserving hardware UART or timer pins for wireless receiver."
+    }
+  ],
+  "risks": [
+    {
+      "id": "risk-heater-burnin",
+      "title": "Sensor Drift During Initial Heating",
+      "severity": "MEDIUM",
+      "mitigation": "Include software lockout requiring 24 hours of burn-in heating before saving baseline calibration."
+    },
+    {
+      "id": "risk-silicone-poisoning",
+      "title": "Sensor Poisoning from Aerosols",
+      "severity": "HIGH",
+      "mitigation": "Clearly label enclosure warnings against using silicone adhesives, hairspray, or VOC cleaners near unit."
+    }
+  ],
+  "recommendations": [
+    {
+      "id": "rec-backup-battery",
+      "category": "FUTURE_FEATURE",
+      "title": "LiPo Battery Backup with Charger IC",
+      "description": "Consider adding a single-cell LiPo battery and TP4056 charging IC for 2-hour backup during power outages."
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+{
+  "section": "database",
+  "instructions": "Add index recommendations for studentId and status query patterns.",
+  "mode": "DEMO"
+}

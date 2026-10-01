@@ -1,0 +1,801 @@
+{
+  "id": "6740a1b2c3d4e5f678905678",
+  "title": "SentinelAir — Autonomous Hazardous Gas & Smoke Detection Circuit",
+  "idea": "SentinelAir is a standalone embedded safety appliance designed to detect dangerous concentrations of flammable gas, smoke, and toxic VOCs in workshops, kitchens, and maker laboratories.",
+  "typeOverride": "HARDWARE",
+  "revision": 2,
+  "createdAt": "2026-09-24T10:00:00Z",
+  "updatedAt": "2026-09-24T10:01:00Z",
+  "blueprint": {
+    "schemaVersion": "2.0",
+    "projectType": "HARDWARE",
+    "classification": {
+      "type": "HARDWARE",
+      "reason": "Project primarily focuses on physical circuit design, embedded controller selection, sensors/actuators, and wiring connections.",
+      "confidence": "HIGH"
+    },
+    "overview": {
+      "projectName": "SentinelAir — Autonomous Hazardous Gas & Smoke Detection Circuit",
+      "summary": "SentinelAir is a standalone embedded safety appliance designed to detect dangerous concentrations of flammable gas, smoke, and toxic VOCs in workshops, kitchens, and maker laboratories.",
+      "problemStatement": "Methane and volatile gas leaks in enclosed educational labs and workshops frequently go unnoticed until dangerous explosive concentrations develop, presenting immediate fire and health risks.",
+      "targetUsers": [
+        "Workshop & Laboratory Safety Supervisors",
+        "Electronics Hobbyists & Makers",
+        "Facilities Maintenance Technicians"
+      ],
+      "goals": [
+        "Continuously monitor atmospheric gas concentrations with sub-second sample rates",
+        "Sound an instant 85dB acoustic and flashing optical alarm when thresholds are exceeded",
+        "Provide clear real-time PPM metrics on a local OLED display without requiring cloud connectivity"
+      ],
+      "scope": [
+        "MQ-135 and MQ-2 electrochemical gas sensing",
+        "DHT22 temperature and relative humidity compensation",
+        "ESP32 analog-to-digital conversion and threshold state machine",
+        "SSD1306 local OLED live metric dashboard",
+        "Piezo buzzer and high-intensity alert LED actuation",
+        "5V DC power regulation and surge protection circuit"
+      ],
+      "outOfScope": [
+        "Internet/Cloud web portal or cellular telemetry",
+        "Automated solenoid gas shutoff valve plumbing installation",
+        "Explosion-proof ATEX zone 0 certified metal casting"
+      ]
+    },
+    "features": [
+      {
+        "id": "feature-gas-sensing",
+        "name": "Electrochemical Gas & Smoke Sampling",
+        "description": "Continuously reads analog voltage from MQ-135 sensor to quantify parts-per-million concentration of harmful airborne compounds.",
+        "priority": "HIGH",
+        "roleIds": [
+          "role-safety-officer"
+        ],
+        "needsApi": false,
+        "needsUi": false,
+        "needsPersistence": false
+      },
+      {
+        "id": "feature-env-compensation",
+        "name": "Temperature & Humidity Compensation",
+        "description": "Measures ambient temperature and relative humidity using DHT22 to mathematically calibrate gas sensor resistance drift.",
+        "priority": "HIGH",
+        "roleIds": [
+          "role-safety-officer"
+        ],
+        "needsApi": false,
+        "needsUi": false,
+        "needsPersistence": false
+      },
+      {
+        "id": "feature-alarm-actuation",
+        "name": "Multi-Modal Acoustic & Optical Alarm",
+        "description": "Drives an active piezo buzzer and pulsing red LED when gas concentration crosses the critical threshold (400 PPM).",
+        "priority": "HIGH",
+        "roleIds": [
+          "role-safety-officer"
+        ],
+        "needsApi": false,
+        "needsUi": false,
+        "needsPersistence": false
+      },
+      {
+        "id": "feature-local-display",
+        "name": "Local OLED Status Display",
+        "description": "Renders live PPM value, ambient temperature, humidity, and safety status badge on a 0.96 inch monochrome display.",
+        "priority": "MEDIUM",
+        "roleIds": [
+          "role-safety-officer"
+        ],
+        "needsApi": false,
+        "needsUi": false,
+        "needsPersistence": false
+      }
+    ],
+    "roles": [
+      {
+        "id": "role-safety-officer",
+        "name": "Laboratory Safety Officer",
+        "description": "Monitors laboratory environment and verifies sentinel alarm test button periodically.",
+        "permissions": [
+          "inspect_readout",
+          "trigger_test_alarm",
+          "calibrate_baseline"
+        ],
+        "interactive": true
+      }
+    ],
+    "requirements": [
+      {
+        "id": "req-sampling-frequency",
+        "type": "FUNCTIONAL",
+        "description": "The microcontroller shall sample sensor ADC pins at a minimum rate of 2 Hz (every 500 ms).",
+        "featureIds": [
+          "feature-gas-sensing"
+        ],
+        "acceptanceCriteria": [
+          "ADC samples are averaged over a 4-sample moving window to filter electrical noise",
+          "Threshold breach triggers alarm state within 1 second of gas exposure"
+        ],
+        "source": "USER_STATED"
+      },
+      {
+        "id": "req-alarm-output",
+        "type": "FUNCTIONAL",
+        "description": "The system shall trigger a continuous 85 dB audible buzzer tone and 4 Hz flashing red LED whenever gas levels exceed 400 PPM.",
+        "featureIds": [
+          "feature-alarm-actuation"
+        ],
+        "acceptanceCriteria": [
+          "Alarm activates within 500ms of threshold breach",
+          "Buzzer sounds continuously until gas levels drop below 350 PPM hysteresis point"
+        ],
+        "source": "USER_STATED"
+      },
+      {
+        "id": "req-power-supply",
+        "type": "NON_FUNCTIONAL",
+        "description": "The circuit shall operate reliably from a standard regulated 5V DC 2A power adapter.",
+        "featureIds": [
+          "feature-gas-sensing",
+          "feature-alarm-actuation"
+        ],
+        "acceptanceCriteria": [
+          "Sensor heater receives steady 5.0V +/- 0.2V DC",
+          "ESP32 operates at 3.3V without brownout resets"
+        ],
+        "source": "AI_ASSUMED"
+      }
+    ],
+    "estimates": {
+      "difficulty": "EASY",
+      "estimatedDuration": "3–5 weeks",
+      "recommendedTeamSize": 2,
+      "teamRoles": [
+        {
+          "role": "Hardware Electronics Engineer",
+          "count": 1,
+          "responsibility": "Schematic design, breadboard circuit assembly, component sourcing, and enclosure modeling"
+        },
+        {
+          "role": "Embedded Firmware Engineer",
+          "count": 1,
+          "responsibility": "ESP32 C++/Arduino firmware, ADC filtering algorithms, and I2C display drivers"
+        }
+      ],
+      "estimatedCost": {
+        "currency": "USD",
+        "minimum": 45,
+        "maximum": 120,
+        "basis": "Prototyping components, breadboard, custom 3D printed enclosure, and 5V power adapter.",
+        "disclaimer": "Approximate estimate based on the supplied requirements."
+      },
+      "resources": [
+        {
+          "name": "Electronics Prototyping Bench",
+          "type": "HARDWARE",
+          "purpose": "Soldering, breadboarding, and digital multimeter testing"
+        },
+        {
+          "name": "3D Printer (PETG Filament)",
+          "type": "HARDWARE",
+          "purpose": "Fabricating ventilated enclosure chassis"
+        }
+      ]
+    },
+    "software": {
+      "applicable": false
+    },
+    "hardware": {
+      "applicable": true,
+      "workingPrinciple": "The MQ-135 electrochemical gas sensor contains a tin dioxide (SnO2) sensing layer that decreases in electrical resistance in the presence of combustible gases and smoke. The resulting analog voltage divider signal is read by the ESP32 ADC. Temperature and humidity values from the DHT22 are incorporated to calibrate baseline air resistance. When calculated PPM exceeds the safety threshold, the ESP32 asserts GPIO pins to activate an acoustic piezo siren and flashing alert LED while refreshing the local I2C OLED display.",
+      "architecture": {
+        "summary": "Star-topology sensor and actuator bus centered on an ESP32 microcontroller with a regulated 5V DC rail.",
+        "blockDiagramMermaid": "graph LR\n    PWR[5V 2A Power Adapter] --> VIN[ESP32 5V Vin & MQ-135 Heater]\n    ESP[ESP32 DevKit V1] --> OLED[SSD1306 OLED Display I2C]\n    MQ[MQ-135 Gas Sensor] -->|Analog Voltage A0| ESP\n    DHT[DHT22 Sensor] -->|1-Wire Digital GPIO4| ESP\n    ESP -->|GPIO18 Digital High| BUZZ[Active Piezo Buzzer 5V]\n    ESP -->|GPIO19 4Hz Pulse| LED[Red Warning LED]"
+      },
+      "components": [
+        {
+          "id": "comp-esp32",
+          "name": "ESP32 DevKit V1 (30-Pin)",
+          "category": "MICROCONTROLLER",
+          "purpose": "Central embedded controller for ADC sampling, sensor calibration, and alert dispatch",
+          "quantity": 1,
+          "specification": "Xtensa Dual-Core 32-bit LX6 MCU, 240MHz, 3.3V logic, 5V Vin tolerant",
+          "alternatives": [
+            "Arduino Nano 33 IoT",
+            "Raspberry Pi Pico"
+          ],
+          "estimatedUnitCost": 6.5,
+          "estimatedTotalCost": 6.5
+        },
+        {
+          "id": "comp-mq135",
+          "name": "MQ-135 Hazardous Gas & Air Quality Sensor",
+          "category": "SENSOR",
+          "purpose": "Detects toxic gases, NH3, alcohol, smoke, and combustible VOCs",
+          "quantity": 1,
+          "specification": "5V operating voltage, internal 33-ohm heater, 10–1000 PPM sensitivity range",
+          "alternatives": [
+            "MQ-2",
+            "BME680"
+          ],
+          "estimatedUnitCost": 4.2,
+          "estimatedTotalCost": 4.2
+        },
+        {
+          "id": "comp-dht22",
+          "name": "DHT22 Digital Temperature & Humidity Sensor",
+          "category": "SENSOR",
+          "purpose": "Compensates for humidity and temperature drift in electrochemical sensor readings",
+          "quantity": 1,
+          "specification": "3.3V–5V DC, -40 to 80°C range (+/-0.5°C), 0-100% RH range (+/-2% RH)",
+          "alternatives": [
+            "DHT11",
+            "SHT31"
+          ],
+          "estimatedUnitCost": 3.8,
+          "estimatedTotalCost": 3.8
+        },
+        {
+          "id": "comp-oled",
+          "name": "SSD1306 0.96-inch Monochrome I2C OLED Display",
+          "category": "DISPLAY",
+          "purpose": "Displays real-time gas PPM, temperature, and system safety status",
+          "quantity": 1,
+          "specification": "128x64 pixels, I2C address 0x3C, 3.3V–5V compatible",
+          "alternatives": [
+            "16x2 LCD with I2C backpack"
+          ],
+          "estimatedUnitCost": 3.5,
+          "estimatedTotalCost": 3.5
+        },
+        {
+          "id": "comp-buzzer",
+          "name": "Active Piezo Siren Buzzer 5V",
+          "category": "ACTUATOR",
+          "purpose": "Emits 85 dB audible warning tone when gas threshold is breached",
+          "quantity": 1,
+          "specification": "5V DC active continuous buzzer, 30mA current consumption",
+          "alternatives": [
+            "Passive buzzer with PWM melody"
+          ],
+          "estimatedUnitCost": 0.8,
+          "estimatedTotalCost": 0.8
+        },
+        {
+          "id": "comp-led",
+          "name": "High-Intensity Red Alert LED (5mm)",
+          "category": "ACTUATOR",
+          "purpose": "Flashing optical emergency beacon paired with 220-ohm current limiting resistor",
+          "quantity": 1,
+          "specification": "5mm diffused red, 2.0V forward voltage, 20mA forward current",
+          "alternatives": [
+            "RGB LED Module"
+          ],
+          "estimatedUnitCost": 0.2,
+          "estimatedTotalCost": 0.2
+        },
+        {
+          "id": "comp-power",
+          "name": "5V 2A DC Wall Power Adapter & Barrel Jack",
+          "category": "POWER",
+          "purpose": "Provides steady 5V power to sensor heating elements and microcontroller",
+          "quantity": 1,
+          "specification": "100-240V AC to 5V 2A DC, 5.5mm x 2.1mm center-positive plug",
+          "alternatives": [
+            "Micro-USB 5V 2A power brick"
+          ],
+          "estimatedUnitCost": 5,
+          "estimatedTotalCost": 5
+        }
+      ],
+      "controllers": [
+        "ESP32 DevKit V1 (30-Pin)"
+      ],
+      "sensors": [
+        "MQ-135 Hazardous Gas & Air Quality Sensor",
+        "DHT22 Digital Temperature & Humidity Sensor"
+      ],
+      "actuators": [
+        "Active Piezo Siren Buzzer 5V",
+        "High-Intensity Red Alert LED (5mm)"
+      ],
+      "communicationModules": [
+        "ESP32 Onboard Hardware I2C (SDA/SCL)"
+      ],
+      "powerRequirements": {
+        "operatingVoltage": "5.0V DC regulated main bus; 3.3V DC internal MCU bus",
+        "powerSource": "5V 2A DC external wall adapter via barrel jack",
+        "estimatedCurrentDraw": "Nominal 180mA during heater warmup; Peak 320mA during alarm buzzer activation"
+      },
+      "pinConnections": [
+        "ESP32 Vin Pin <-> 5V DC Power Rail",
+        "ESP32 GND Pin <-> Common System Ground",
+        "ESP32 GPIO34 (ADC1_CH6) <-> MQ-135 Analog A0 Pin",
+        "ESP32 GPIO4 <-> DHT22 Data Pin",
+        "ESP32 GPIO21 (SDA) <-> SSD1306 OLED SDA Pin",
+        "ESP32 GPIO22 (SCL) <-> SSD1306 OLED SCL Pin",
+        "ESP32 GPIO18 <-> Piezo Buzzer Positive Pin",
+        "ESP32 GPIO19 <-> Red LED Anode (via 220-ohm resistor)"
+      ],
+      "connections": [
+        {
+          "id": "conn-pwr-esp",
+          "fromComponentId": "comp-power",
+          "fromPin": "5V_OUT",
+          "toComponentId": "comp-esp32",
+          "toPin": "VIN",
+          "signalType": "POWER",
+          "voltage": "5.0V",
+          "purpose": "Supplies 5V to ESP32 onboard regulator",
+          "notes": "Connect to Vin terminal"
+        },
+        {
+          "id": "conn-gnd-esp",
+          "fromComponentId": "comp-power",
+          "fromPin": "GND",
+          "toComponentId": "comp-esp32",
+          "toPin": "GND",
+          "signalType": "GROUND",
+          "voltage": "0V",
+          "purpose": "System ground reference",
+          "notes": "Shared ground plane"
+        },
+        {
+          "id": "conn-pwr-mq135",
+          "fromComponentId": "comp-power",
+          "fromPin": "5V_OUT",
+          "toComponentId": "comp-mq135",
+          "toPin": "VCC",
+          "signalType": "POWER",
+          "voltage": "5.0V",
+          "purpose": "Power sensor internal heating coil",
+          "notes": "Requires dedicated 5V rail connection"
+        },
+        {
+          "id": "conn-gnd-mq135",
+          "fromComponentId": "comp-power",
+          "fromPin": "GND",
+          "toComponentId": "comp-mq135",
+          "toPin": "GND",
+          "signalType": "GROUND",
+          "voltage": "0V",
+          "purpose": "Sensor ground return",
+          "notes": "Common ground"
+        },
+        {
+          "id": "conn-sig-mq135",
+          "fromComponentId": "comp-mq135",
+          "fromPin": "A0",
+          "toComponentId": "comp-esp32",
+          "toPin": "GPIO34",
+          "signalType": "ANALOG",
+          "voltage": "0-3.3V",
+          "purpose": "Gas concentration analog voltage output",
+          "notes": "Read by ESP32 ADC1 (input-only pin)"
+        },
+        {
+          "id": "conn-pwr-dht22",
+          "fromComponentId": "comp-esp32",
+          "fromPin": "3V3",
+          "toComponentId": "comp-dht22",
+          "toPin": "VCC",
+          "signalType": "POWER",
+          "voltage": "3.3V",
+          "purpose": "Power DHT22 electronics",
+          "notes": "3.3V regulated output from ESP32"
+        },
+        {
+          "id": "conn-gnd-dht22",
+          "fromComponentId": "comp-esp32",
+          "fromPin": "GND",
+          "toComponentId": "comp-dht22",
+          "toPin": "GND",
+          "signalType": "GROUND",
+          "voltage": "0V",
+          "purpose": "DHT22 ground",
+          "notes": "Common ground"
+        },
+        {
+          "id": "conn-sig-dht22",
+          "fromComponentId": "comp-dht22",
+          "fromPin": "DATA",
+          "toComponentId": "comp-esp32",
+          "toPin": "GPIO4",
+          "signalType": "DIGITAL_1WIRE",
+          "voltage": "3.3V",
+          "purpose": "Bidirectional single-wire temperature and humidity stream",
+          "notes": "Requires 10k pullup resistor to 3.3V"
+        },
+        {
+          "id": "conn-pwr-oled",
+          "fromComponentId": "comp-esp32",
+          "fromPin": "3V3",
+          "toComponentId": "comp-oled",
+          "toPin": "VCC",
+          "signalType": "POWER",
+          "voltage": "3.3V",
+          "purpose": "Power OLED display logic and panel",
+          "notes": "Draws approx 20mA"
+        },
+        {
+          "id": "conn-gnd-oled",
+          "fromComponentId": "comp-esp32",
+          "fromPin": "GND",
+          "toComponentId": "comp-oled",
+          "toPin": "GND",
+          "signalType": "GROUND",
+          "voltage": "0V",
+          "purpose": "OLED ground",
+          "notes": "Common ground"
+        },
+        {
+          "id": "conn-sda-oled",
+          "fromComponentId": "comp-esp32",
+          "fromPin": "GPIO21",
+          "toComponentId": "comp-oled",
+          "toPin": "SDA",
+          "signalType": "I2C_DATA",
+          "voltage": "3.3V",
+          "purpose": "I2C Serial Data line",
+          "notes": "Standard ESP32 default SDA pin"
+        },
+        {
+          "id": "conn-scl-oled",
+          "fromComponentId": "comp-esp32",
+          "fromPin": "GPIO22",
+          "toComponentId": "comp-oled",
+          "toPin": "SCL",
+          "signalType": "I2C_CLOCK",
+          "voltage": "3.3V",
+          "purpose": "I2C Serial Clock line",
+          "notes": "Standard ESP32 default SCL pin"
+        },
+        {
+          "id": "conn-sig-buzz",
+          "fromComponentId": "comp-esp32",
+          "fromPin": "GPIO18",
+          "toComponentId": "comp-buzzer",
+          "toPin": "POSITIVE",
+          "signalType": "DIGITAL_OUT",
+          "voltage": "3.3V",
+          "purpose": "Drives buzzer on alarm trigger",
+          "notes": "Active buzzer emits tone when pin is HIGH"
+        },
+        {
+          "id": "conn-gnd-buzz",
+          "fromComponentId": "comp-esp32",
+          "fromPin": "GND",
+          "toComponentId": "comp-buzzer",
+          "toPin": "NEGATIVE",
+          "signalType": "GROUND",
+          "voltage": "0V",
+          "purpose": "Buzzer ground return",
+          "notes": "Common ground"
+        },
+        {
+          "id": "conn-sig-led",
+          "fromComponentId": "comp-esp32",
+          "fromPin": "GPIO19",
+          "toComponentId": "comp-led",
+          "toPin": "ANODE",
+          "signalType": "DIGITAL_OUT",
+          "voltage": "3.3V",
+          "purpose": "Drives visual flashing beacon",
+          "notes": "220-ohm current-limiting resistor placed in series"
+        },
+        {
+          "id": "conn-gnd-led",
+          "fromComponentId": "comp-esp32",
+          "fromPin": "GND",
+          "toComponentId": "comp-led",
+          "toPin": "CATHODE",
+          "signalType": "GROUND",
+          "voltage": "0V",
+          "purpose": "LED cathode ground return",
+          "notes": "Common ground"
+        }
+      ],
+      "firmwareLogic": {
+        "mainLoopDescription": "Reads analog sensor voltage and environmental metrics every 500 ms. Computes parts-per-million concentration with calibration curves. Updates OLED buffer. If gas concentration exceeds 400 PPM threshold, enters ALARM state toggling buzzer and LED at 4Hz until level falls below 350 PPM.",
+        "setupSteps": [
+          "Initialize serial port at 115200 baud for diagnostics",
+          "Set GPIO18 (buzzer) and GPIO19 (LED) to OUTPUT mode",
+          "Initialize Wire library for I2C and verify SSD1306 display at 0x3C",
+          "Start DHT22 temperature and humidity communication",
+          "Execute 30-second sensor heater warmup countdown on display"
+        ],
+        "safetyNotes": [
+          "Preheat MQ-135 sensor for at least 24 hours prior to final accuracy calibration",
+          "Do not touch heated sensor mesh with bare fingers during operation",
+          "Ensure device is placed away from direct drafts to maintain accurate ambient readings"
+        ]
+      },
+      "diagrams": {
+        "systemBlockMermaid": "graph TD\n    PWR[5V 2A DC Power Supply] --> ESP[ESP32 Microcontroller]\n    PWR --> MQ[MQ-135 Gas Sensor]\n    MQ -->|Analog A0| ESP\n    DHT[DHT22 Temp & Humidity] -->|Digital GPIO4| ESP\n    ESP -->|I2C SDA/SCL| OLED[SSD1306 OLED Display]\n    ESP -->|GPIO18 Digital| BUZZ[Active Piezo Buzzer]\n    ESP -->|GPIO19 Digital| LED[Red Warning LED]"
+      },
+      "enclosure": {
+        "type": "Ventilated Wall-Mount Enclosure",
+        "material": "Flame-Retardant ABS or 3D Printed PETG",
+        "dimensions": "120mm x 80mm x 45mm",
+        "protectionRating": "IP40 with louvered gas intake vents"
+      },
+      "threeDModel": {
+        "generated": true,
+        "enclosure": {
+          "type": "WALL_MOUNT",
+          "dimensions": [
+            120,
+            45,
+            80
+          ],
+          "color": "#334155",
+          "opacity": 0.35,
+          "wireframe": false
+        },
+        "components": [
+          {
+            "componentId": "comp-esp32",
+            "primitiveType": "BOARD",
+            "dimensions": [
+              55,
+              6,
+              28
+            ],
+            "position": [
+              0,
+              5,
+              0
+            ],
+            "rotation": [
+              0,
+              0,
+              0
+            ],
+            "color": "#065f46",
+            "label": "ESP32 DevKit V1"
+          },
+          {
+            "componentId": "comp-mq135",
+            "primitiveType": "SENSOR_MODULE",
+            "dimensions": [
+              20,
+              16,
+              20
+            ],
+            "position": [
+              -35,
+              12,
+              15
+            ],
+            "rotation": [
+              0,
+              0,
+              0
+            ],
+            "color": "#b45309",
+            "label": "MQ-135 Gas Sensor"
+          },
+          {
+            "componentId": "comp-dht22",
+            "primitiveType": "SENSOR_MODULE",
+            "dimensions": [
+              15,
+              20,
+              10
+            ],
+            "position": [
+              35,
+              10,
+              15
+            ],
+            "rotation": [
+              0,
+              0,
+              0
+            ],
+            "color": "#f8fafc",
+            "label": "DHT22 Temp & Humidity"
+          },
+          {
+            "componentId": "comp-oled",
+            "primitiveType": "DISPLAY_PANEL",
+            "dimensions": [
+              28,
+              4,
+              28
+            ],
+            "position": [
+              0,
+              22,
+              -10
+            ],
+            "rotation": [
+              0,
+              0,
+              0
+            ],
+            "color": "#0f172a",
+            "label": "SSD1306 OLED Display"
+          },
+          {
+            "componentId": "comp-buzzer",
+            "primitiveType": "BUZZER",
+            "dimensions": [
+              12,
+              10,
+              12
+            ],
+            "position": [
+              35,
+              8,
+              -20
+            ],
+            "rotation": [
+              0,
+              0,
+              0
+            ],
+            "color": "#1e293b",
+            "label": "Active Buzzer 5V"
+          },
+          {
+            "componentId": "comp-led",
+            "primitiveType": "LED",
+            "dimensions": [
+              6,
+              10,
+              6
+            ],
+            "position": [
+              -35,
+              10,
+              -20
+            ],
+            "rotation": [
+              0,
+              0,
+              0
+            ],
+            "color": "#ef4444",
+            "label": "Red Warning LED"
+          },
+          {
+            "componentId": "comp-power",
+            "primitiveType": "CONNECTOR",
+            "dimensions": [
+              12,
+              10,
+              15
+            ],
+            "position": [
+              0,
+              6,
+              -35
+            ],
+            "rotation": [
+              0,
+              0,
+              0
+            ],
+            "color": "#475569",
+            "label": "DC 5V Barrel Jack"
+          }
+        ]
+      }
+    },
+    "roadmap": [
+      {
+        "id": "phase-circuit-prototype",
+        "title": "Phase 1: Breadboard Circuit & Sensor Validation",
+        "description": "Assemble core sensing circuit on breadboard and verify ADC voltage curves.",
+        "featureIds": [
+          "feature-gas-sensing",
+          "feature-env-compensation"
+        ],
+        "tasks": [
+          "Wire ESP32, MQ-135, and DHT22 on solderless breadboard",
+          "Calibrate clean-air baseline resistance (R0) over 24-hour burn in",
+          "Verify I2C bus communication with SSD1306 OLED display"
+        ],
+        "dependsOnPhaseIds": [],
+        "completionCriteria": [
+          "Gas concentration and ambient temperature read reliably on serial monitor"
+        ]
+      },
+      {
+        "id": "phase-alarm-firmware",
+        "title": "Phase 2: Alert State Machine & Hysteresis",
+        "description": "Implement non-blocking buzzer/LED alert routines and hysteresis thresholds.",
+        "featureIds": [
+          "feature-alarm-actuation",
+          "feature-local-display"
+        ],
+        "tasks": [
+          "Write threshold comparator with 50 PPM hysteresis band",
+          "Implement timer-driven 4Hz flashing LED and acoustic siren logic",
+          "Design OLED visual layout showing PPM gauge and status banner"
+        ],
+        "dependsOnPhaseIds": [
+          "phase-circuit-prototype"
+        ],
+        "completionCriteria": [
+          "Simulated gas test reliably activates buzzer and OLED alarm state"
+        ]
+      },
+      {
+        "id": "phase-pcb-enclosure",
+        "title": "Phase 3: Custom PCB & 3D Printed Chassis",
+        "description": "Design compact 2-layer PCB and fabricate ventilated enclosure.",
+        "featureIds": [
+          "feature-gas-sensing",
+          "feature-alarm-actuation"
+        ],
+        "tasks": [
+          "Layout schematic and PCB traces in KiCad",
+          "Fabricate PCB prototype with through-hole headers",
+          "3D print wall-mount chassis with ventilation louvers"
+        ],
+        "dependsOnPhaseIds": [
+          "phase-alarm-firmware"
+        ],
+        "completionCriteria": [
+          "Complete physical device assembled and wall-mounted for burn-in testing"
+        ]
+      }
+    ],
+    "assumptions": [
+      {
+        "id": "asm-mains-power",
+        "description": "Continuous mains AC power is available to power the 5V DC adapter at installation location.",
+        "affectedEntityIds": [
+          "comp-power"
+        ],
+        "reason": "MQ-series electrochemical heaters consume 150-180mA continuously, making long-term battery operation impractical."
+      }
+    ],
+    "openQuestions": [
+      {
+        "id": "q-calibrated-gas-source",
+        "question": "Will calibrated test gas cylinders (e.g. 500 PPM methane reference) be available for precision span calibration?",
+        "affectedEntityIds": [
+          "comp-mq135",
+          "feature-gas-sensing"
+        ],
+        "whyItMatters": "Determines whether calibration relies on factory curve approximations or precise multi-point physical reference calibration."
+      }
+    ],
+    "risks": [
+      {
+        "id": "risk-heater-burnin",
+        "title": "Sensor Drift During Initial Heating",
+        "severity": "MEDIUM",
+        "mitigation": "Include software lockout requiring 24 hours of burn-in heating before saving baseline calibration."
+      },
+      {
+        "id": "risk-silicone-poisoning",
+        "title": "Sensor Poisoning from Aerosols",
+        "severity": "HIGH",
+        "mitigation": "Clearly label enclosure warnings against using silicone adhesives, hairspray, or VOC cleaners near unit."
+      }
+    ],
+    "recommendations": [
+      {
+        "id": "rec-backup-battery",
+        "category": "FUTURE_FEATURE",
+        "title": "LiPo Battery Backup with Charger IC",
+        "description": "Consider adding a single-cell LiPo battery and TP4056 charging IC for 2-hour backup during power outages."
+      }
+    ]
+  },
+  "blueprintBasedOnIdeaHash": "d8e3b4a2c1f0987654321fedcba0987654321fedcba0987654321fedcba09876",
+  "blueprintOutdated": false,
+  "generationMetadata": {
+    "source": "DEMO",
+    "provider": null,
+    "model": "deterministic-fixture-v2",
+    "timestamp": "2026-09-24T10:01:00Z"
+  },
+  "validationIssues": [],
+  "validationCheckedAt": "2026-09-24T10:01:05Z"
+}

@@ -1,0 +1,800 @@
+{
+  "schemaVersion": "2.0",
+  "projectType": "HARDWARE",
+  "classification": {
+    "type": "HARDWARE",
+    "reason": "Project primarily focuses on physical circuit design, embedded controller selection, sensors/actuators, and wiring connections.",
+    "confidence": "HIGH"
+  },
+  "overview": {
+    "projectName": "AgriFlow — Smart Irrigation & Soil Moisture Automation Controller",
+    "summary": "AgriFlow is an automated, weather-resilient agricultural IoT controller designed to continuously measure soil dielectric permittivity and atmospheric vapor-pressure deficit (VPD) to actuate high-pressure drip solenoid valves.",
+    "problemStatement": "Over-irrigation in greenhouse crops wastes up to 40% of fresh water while leaching essential soil nutrients; manual valve scheduling cannot react to real-time microclimate evaporation changes.",
+    "targetUsers": [
+      "Precision Agriculture Farmers",
+      "Greenhouse Operators",
+      "Urban Community Gardeners"
+    ],
+    "goals": [
+      "Continuously monitor root-zone volumetric water content (VWC)",
+      "Trigger 12V DC brass solenoid valve pulses precisely when moisture drops below 35%",
+      "Display real-time soil VWC, temperature, and pump status on an outdoor-readable 16x2 LCD"
+    ],
+    "scope": [
+      "Capacitive soil moisture sensing v1.2 with corrosion-resistant probe geometry",
+      "DHT22 high-accuracy temperature and relative humidity sensing",
+      "ESP32 dual-core threshold controller and non-volatile calibration storage",
+      "Optocoupled 5V dual-channel relay module driving a 12V DC solenoid valve",
+      "IP67 weatherproof sealed junction box with PG7 cable glands",
+      "Local 16x2 I2C backlit character display"
+    ],
+    "outOfScope": [
+      "Cloud telemetry or remote cellular modem streaming",
+      "Multi-zone chemical fertilizer injection dosing pump",
+      "Solar MPPT charge controller sub-assembly"
+    ]
+  },
+  "features": [
+    {
+      "id": "feature-soil-sensing",
+      "name": "Dielectric Volumetric Water Content Sensing",
+      "description": "Samples analog output from capacitive soil probe with 12-bit ADC precision to determine real-time soil hydration.",
+      "priority": "HIGH",
+      "roleIds": [
+        "role-farm-operator"
+      ],
+      "needsApi": false,
+      "needsUi": false,
+      "needsPersistence": false
+    },
+    {
+      "id": "feature-climate-sensing",
+      "name": "Atmospheric Vapor-Pressure Deficit Tracking",
+      "description": "Monitors ambient greenhouse temperature and relative humidity with DHT22 for microclimate evapotranspiration calculations.",
+      "priority": "HIGH",
+      "roleIds": [
+        "role-farm-operator"
+      ],
+      "needsApi": false,
+      "needsUi": false,
+      "needsPersistence": false
+    },
+    {
+      "id": "feature-solenoid-actuation",
+      "name": "Pulsed Solenoid Valve Drip Control",
+      "description": "Switches an isolated 10A optocoupled relay to open a 12V DC brass solenoid water valve for regulated 15-minute soak cycles.",
+      "priority": "HIGH",
+      "roleIds": [
+        "role-farm-operator"
+      ],
+      "needsApi": false,
+      "needsUi": false,
+      "needsPersistence": false
+    },
+    {
+      "id": "feature-lcd-display",
+      "name": "Outdoor Backlit LCD Status Display",
+      "description": "Renders live soil moisture percentage, air temperature, valve state, and last irrigation timestamp on a 16x2 character screen.",
+      "priority": "MEDIUM",
+      "roleIds": [
+        "role-farm-operator"
+      ],
+      "needsApi": false,
+      "needsUi": false,
+      "needsPersistence": false
+    }
+  ],
+  "roles": [
+    {
+      "id": "role-farm-operator",
+      "name": "Farm Irrigation Operator",
+      "description": "Supervises crop zone hydration thresholds and performs manual bypass irrigation tests.",
+      "permissions": [
+        "inspect_soil_metrics",
+        "trigger_manual_irrigation",
+        "calibrate_dry_wet_limits"
+      ],
+      "interactive": true
+    }
+  ],
+  "requirements": [
+    {
+      "id": "req-moisture-accuracy",
+      "type": "FUNCTIONAL",
+      "description": "System shall sample soil moisture at 10-second intervals with +/- 2% volumetric water content accuracy.",
+      "featureIds": [
+        "feature-soil-sensing"
+      ],
+      "acceptanceCriteria": [
+        "ADC reading updates every 10 seconds",
+        "Calibration curve maps 0-100% moisture correctly"
+      ],
+      "source": "USER_STATED"
+    },
+    {
+      "id": "req-solenoid-safety",
+      "type": "NON_FUNCTIONAL",
+      "description": "Solenoid valve activation shall feature a hardware watchdog to prevent overflow flooding if MCU freezes.",
+      "featureIds": [
+        "feature-solenoid-actuation"
+      ],
+      "acceptanceCriteria": [
+        "Maximum continuous open time strictly capped at 20 minutes",
+        "Normally closed fail-safe valve state"
+      ],
+      "source": "AI_ASSUMED"
+    },
+    {
+      "id": "req-weatherproof-protection",
+      "type": "NON_FUNCTIONAL",
+      "description": "Controller casing must withstand 100% humidity and direct water spray in greenhouse environments.",
+      "featureIds": [
+        "feature-lcd-display"
+      ],
+      "acceptanceCriteria": [
+        "IP67 rated enclosure with silicone seal gasket",
+        "Cable entries sealed via waterproof glands"
+      ],
+      "source": "AI_ASSUMED"
+    }
+  ],
+  "estimates": {
+    "difficulty": "EASY",
+    "estimatedDuration": "3–5 weeks",
+    "recommendedTeamSize": 2,
+    "teamRoles": [
+      {
+        "role": "Hardware Electronics Engineer",
+        "count": 1,
+        "responsibility": "Schematic design, breadboard circuit assembly, component sourcing, and enclosure modeling"
+      },
+      {
+        "role": "Embedded Firmware Engineer",
+        "count": 1,
+        "responsibility": "ESP32 C++/Arduino firmware, ADC filtering algorithms, and I2C display drivers"
+      }
+    ],
+    "estimatedCost": {
+      "currency": "USD",
+      "minimum": 45,
+      "maximum": 120,
+      "basis": "Prototyping components, breadboard, custom 3D printed enclosure, and 5V power adapter.",
+      "disclaimer": "Approximate estimate based on the supplied requirements."
+    },
+    "resources": [
+      {
+        "name": "Electronics Prototyping Bench",
+        "type": "HARDWARE",
+        "purpose": "Soldering, breadboarding, and digital multimeter testing"
+      },
+      {
+        "name": "3D Printer (PETG Filament)",
+        "type": "HARDWARE",
+        "purpose": "Fabricating ventilated enclosure chassis"
+      }
+    ]
+  },
+  "software": {
+    "applicable": false
+  },
+  "hardware": {
+    "applicable": true,
+    "workingPrinciple": "Frequency-domain capacitive probe measures changes in soil dielectric permittivity caused by water content. When the analog reading falls below the 35% threshold, ESP32 GPIO4 trips an optoisolated relay, opening a 12V DC brass solenoid valve to deliver pulsed drip hydration.",
+    "components": [
+      {
+        "id": "comp-esp32",
+        "name": "ESP32 DevKit V1 Microcontroller",
+        "category": "MICROCONTROLLER",
+        "purpose": "Dual-core processor executing sensor sampling loop, relay control state machine, and I2C LCD driver",
+        "quantity": 1,
+        "specification": "ESP-WROOM-32, 240MHz Xtensa Dual-Core, 12-bit ADC, 520KB SRAM, 3.3V Logic",
+        "alternatives": [
+          "Arduino Uno with Terminal Shield",
+          "Raspberry Pi Pico"
+        ],
+        "estimatedUnitCost": 4.5,
+        "estimatedTotalCost": 4.5
+      },
+      {
+        "id": "comp-soil-moisture",
+        "name": "Capacitive Soil Moisture Probe v1.2",
+        "category": "SENSOR",
+        "purpose": "Corrosion-resistant dielectric root-zone volumetric water content sensor",
+        "quantity": 1,
+        "specification": "Analog voltage 0-3.0V linear output, 3.3V-5V operating voltage, conformal coated probe",
+        "alternatives": [
+          "Chirp I2C Soil Sensor",
+          "DFRobot Analog Capacitive Probe"
+        ],
+        "estimatedUnitCost": 2.8,
+        "estimatedTotalCost": 2.8
+      },
+      {
+        "id": "comp-dht22",
+        "name": "DHT22 High-Precision Temperature & Humidity Sensor",
+        "category": "SENSOR",
+        "purpose": "Greenhouse ambient temperature and relative humidity tracking for VPD calculations",
+        "quantity": 1,
+        "specification": "-40 to 80C (+/-0.5C), 0 to 100% RH (+/-2% RH), digital single-bus protocol",
+        "alternatives": [
+          "BME280 I2C Sensor",
+          "SHT31-D"
+        ],
+        "estimatedUnitCost": 3.2,
+        "estimatedTotalCost": 3.2
+      },
+      {
+        "id": "comp-relay",
+        "name": "5V Dual-Channel Optocoupled Relay Module",
+        "category": "ACTUATOR",
+        "purpose": "Electrically isolated switching for 12V DC solenoid valve power circuit",
+        "quantity": 1,
+        "specification": "10A @ 250VAC / 30VDC contacts, PC817 optocoupler isolation, active LOW trigger",
+        "alternatives": [
+          "Single-Channel MOSFET Driver Module",
+          "Solid State Relay (SSR)"
+        ],
+        "estimatedUnitCost": 3.5,
+        "estimatedTotalCost": 3.5
+      },
+      {
+        "id": "comp-solenoid",
+        "name": "12V DC 1/2-Inch Brass Solenoid Water Valve",
+        "category": "ACTUATOR",
+        "purpose": "Normally closed electromechanical valve controlling pressurized drip irrigation line",
+        "quantity": 1,
+        "specification": "12V DC, 0.02 - 0.8 MPa operating pressure, 1/2-inch NPT threaded brass body",
+        "alternatives": [
+          "12V Motorized Ball Valve",
+          "12V Submersible 3W Water Pump"
+        ],
+        "estimatedUnitCost": 9.8,
+        "estimatedTotalCost": 9.8
+      },
+      {
+        "id": "comp-lcd1602",
+        "name": "16x2 Character I2C LCD Display Module",
+        "category": "DISPLAY",
+        "purpose": "High-contrast outdoor-readable status readout showing live VWC and pump status",
+        "quantity": 1,
+        "specification": "16 columns x 2 rows, PCF8574 I2C backpack (default address 0x27), yellow-green backlight",
+        "alternatives": [
+          "0.96 inch I2C OLED",
+          "TM1637 4-Digit Display"
+        ],
+        "estimatedUnitCost": 3.9,
+        "estimatedTotalCost": 3.9
+      },
+      {
+        "id": "comp-power",
+        "name": "12V 2A DC Power Adapter with Step-Down Buck Converter",
+        "category": "POWER",
+        "purpose": "Supplies 12V DC for solenoid valve and steps down to clean 5V DC for ESP32 and relay logic",
+        "quantity": 1,
+        "specification": "Input 100-240VAC; Output 12VDC 2A barrel jack; onboard LM2596 5V 3A step-down regulator",
+        "alternatives": [
+          "12V Solar Panel + MPPT Battery Kit",
+          "Dual 5V/12V Industrial DIN Power Supply"
+        ],
+        "estimatedUnitCost": 5.5,
+        "estimatedTotalCost": 5.5
+      },
+      {
+        "id": "comp-terminals",
+        "name": "8-Position Heavy-Duty Screw Barrier Terminal Block",
+        "category": "PASSIVE",
+        "purpose": "Secure field wiring terminals for sensor leads, valve cables, and DC power input",
+        "quantity": 1,
+        "specification": "Pitch 8.25mm, 15A 300V rating, zinc-plated steel screws with transparent protective cover",
+        "alternatives": [
+          "WAGO 221 Lever Connectors",
+          "Phoenix Contact Pluggable Blocks"
+        ],
+        "estimatedUnitCost": 1.8,
+        "estimatedTotalCost": 1.8
+      }
+    ],
+    "controllers": [
+      "ESP32 DevKit V1 240MHz Dual-Core with 12-bit ADC"
+    ],
+    "sensors": [
+      "Capacitive Soil Moisture Probe v1.2",
+      "DHT22 Digital Temperature & Humidity Sensor"
+    ],
+    "actuators": [
+      "5V Dual Optocoupled Relay Module",
+      "12V Brass Solenoid Water Valve"
+    ],
+    "communicationModules": [
+      "Onboard ESP32 802.11b/g/n Wi-Fi & BLE (Local AP Diagnostics)"
+    ],
+    "powerRequirements": {
+      "voltageRail": "12V DC main solenoid rail; 5.0V DC logic rail; 3.3V DC sensor rail",
+      "powerSource": "12V 2A DC regulated wall adapter with LM2596 step-down converter",
+      "estimatedCurrentDraw": "Nominal 120mA standby; Peak 650mA during 12V solenoid valve activation"
+    },
+    "pinConnections": [
+      "ESP32 3V3 Pin <-> Soil Moisture Probe VCC",
+      "ESP32 GND Pin <-> Common System Ground",
+      "ESP32 GPIO36 (VP / ADC1_CH0) <-> Soil Moisture Analog Signal",
+      "ESP32 GPIO18 <-> DHT22 Data Pin (with 10k pullup)",
+      "ESP32 GPIO4 <-> Relay Module IN1 Trigger Pin",
+      "ESP32 GPIO21 (SDA) <-> LCD1602 SDA Pin",
+      "ESP32 GPIO22 (SCL) <-> LCD1602 SCL Pin",
+      "Relay Module NO1 Contact <-> 12V Solenoid Valve Positive Terminal"
+    ],
+    "connections": [
+      {
+        "id": "conn-pwr-esp",
+        "fromComponentId": "comp-power",
+        "fromPin": "5V_OUT",
+        "toComponentId": "comp-esp32",
+        "toPin": "VIN",
+        "signalType": "POWER",
+        "voltage": "5.0V",
+        "purpose": "Powers ESP32 onboard LDO regulator"
+      },
+      {
+        "id": "conn-gnd-esp",
+        "fromComponentId": "comp-power",
+        "fromPin": "GND",
+        "toComponentId": "comp-esp32",
+        "toPin": "GND",
+        "signalType": "GROUND",
+        "voltage": "0V",
+        "purpose": "System ground reference"
+      },
+      {
+        "id": "conn-soil-vcc",
+        "fromComponentId": "comp-esp32",
+        "fromPin": "3V3",
+        "toComponentId": "comp-soil-moisture",
+        "toPin": "VCC",
+        "signalType": "POWER",
+        "voltage": "3.3V",
+        "purpose": "Powers capacitive moisture probe"
+      },
+      {
+        "id": "conn-soil-gnd",
+        "fromComponentId": "comp-esp32",
+        "fromPin": "GND",
+        "toComponentId": "comp-soil-moisture",
+        "toPin": "GND",
+        "signalType": "GROUND",
+        "voltage": "0V",
+        "purpose": "Soil probe ground"
+      },
+      {
+        "id": "conn-soil-sig",
+        "fromComponentId": "comp-soil-moisture",
+        "fromPin": "AOUT",
+        "toComponentId": "comp-esp32",
+        "toPin": "GPIO36",
+        "signalType": "ANALOG",
+        "voltage": "0-3.3V",
+        "purpose": "Volumetric water content analog voltage"
+      },
+      {
+        "id": "conn-dht-vcc",
+        "fromComponentId": "comp-esp32",
+        "fromPin": "3V3",
+        "toComponentId": "comp-dht22",
+        "toPin": "VCC",
+        "signalType": "POWER",
+        "voltage": "3.3V",
+        "purpose": "Powers DHT22 climate sensor"
+      },
+      {
+        "id": "conn-dht-gnd",
+        "fromComponentId": "comp-esp32",
+        "fromPin": "GND",
+        "toComponentId": "comp-dht22",
+        "toPin": "GND",
+        "signalType": "GROUND",
+        "voltage": "0V",
+        "purpose": "DHT22 ground reference"
+      },
+      {
+        "id": "conn-dht-sig",
+        "fromComponentId": "comp-dht22",
+        "fromPin": "DATA",
+        "toComponentId": "comp-esp32",
+        "toPin": "GPIO18",
+        "signalType": "DIGITAL_1WIRE",
+        "voltage": "3.3V",
+        "purpose": "Single-wire temperature and humidity stream"
+      },
+      {
+        "id": "conn-relay-vcc",
+        "fromComponentId": "comp-power",
+        "fromPin": "5V_OUT",
+        "toComponentId": "comp-relay",
+        "toPin": "VCC",
+        "signalType": "POWER",
+        "voltage": "5.0V",
+        "purpose": "Powers relay electromagnetic coil circuit"
+      },
+      {
+        "id": "conn-relay-gnd",
+        "fromComponentId": "comp-power",
+        "fromPin": "GND",
+        "toComponentId": "comp-relay",
+        "toPin": "GND",
+        "signalType": "GROUND",
+        "voltage": "0V",
+        "purpose": "Relay logic ground"
+      },
+      {
+        "id": "conn-relay-in1",
+        "fromComponentId": "comp-esp32",
+        "fromPin": "GPIO4",
+        "toComponentId": "comp-relay",
+        "toPin": "IN1",
+        "signalType": "DIGITAL_OUT",
+        "voltage": "3.3V",
+        "purpose": "Active-low optocoupler valve trigger"
+      },
+      {
+        "id": "conn-solenoid-pwr",
+        "fromComponentId": "comp-relay",
+        "fromPin": "NO1",
+        "toComponentId": "comp-solenoid",
+        "toPin": "VCC",
+        "signalType": "POWER",
+        "voltage": "12V",
+        "purpose": "Switched 12V power supply to brass solenoid coil"
+      },
+      {
+        "id": "conn-solenoid-gnd",
+        "fromComponentId": "comp-power",
+        "fromPin": "12V_GND",
+        "toComponentId": "comp-solenoid",
+        "toPin": "GND",
+        "signalType": "GROUND",
+        "voltage": "0V",
+        "purpose": "High-current solenoid return ground"
+      },
+      {
+        "id": "conn-lcd-vcc",
+        "fromComponentId": "comp-esp32",
+        "fromPin": "3V3",
+        "toComponentId": "comp-lcd1602",
+        "toPin": "VCC",
+        "signalType": "POWER",
+        "voltage": "3.3V",
+        "purpose": "Powers LCD controller logic and LED backlight"
+      },
+      {
+        "id": "conn-lcd-gnd",
+        "fromComponentId": "comp-esp32",
+        "fromPin": "GND",
+        "toComponentId": "comp-lcd1602",
+        "toPin": "GND",
+        "signalType": "GROUND",
+        "voltage": "0V",
+        "purpose": "LCD ground reference"
+      },
+      {
+        "id": "conn-lcd-sda",
+        "fromComponentId": "comp-esp32",
+        "fromPin": "GPIO21",
+        "toComponentId": "comp-lcd1602",
+        "toPin": "SDA",
+        "signalType": "I2C_DATA",
+        "voltage": "3.3V",
+        "purpose": "I2C Serial Data line for display text"
+      },
+      {
+        "id": "conn-lcd-scl",
+        "fromComponentId": "comp-esp32",
+        "fromPin": "GPIO22",
+        "toComponentId": "comp-lcd1602",
+        "toPin": "SCL",
+        "signalType": "I2C_CLOCK",
+        "voltage": "3.3V",
+        "purpose": "I2C Serial Clock line for display timing"
+      }
+    ],
+    "enclosure": {
+      "type": "WEATHERPROOF_BOX",
+      "material": "IP67 Weatherproof ABS with Silicone Gasket & Clear Polycarbonate Lid",
+      "dimensions": "150mm x 110mm x 60mm",
+      "protectionRating": "IP67 waterproof with dual PG7 cable glands"
+    },
+    "enclosureConcept": {
+      "type": "WEATHERPROOF_BOX",
+      "name": "Weatherproof Sealed Enclosure",
+      "material": "IP67 Weatherproof ABS with Silicone Gasket & Clear Polycarbonate Lid",
+      "dimensions": "150mm x 110mm x 60mm",
+      "protectionRating": "IP67 waterproof with dual PG7 cable glands"
+    },
+    "threeDModel": {
+      "generated": true,
+      "enclosure": {
+        "type": "WEATHERPROOF_BOX",
+        "dimensions": [
+          150,
+          60,
+          110
+        ],
+        "color": "#14532d",
+        "opacity": 0.35,
+        "wireframe": false
+      },
+      "components": [
+        {
+          "componentId": "comp-esp32",
+          "primitiveType": "BOARD",
+          "dimensions": [
+            55,
+            6,
+            28
+          ],
+          "position": [
+            -20,
+            6,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "color": "#065f46",
+          "label": "ESP32 Controller"
+        },
+        {
+          "componentId": "comp-relay",
+          "primitiveType": "BOARD",
+          "dimensions": [
+            45,
+            14,
+            35
+          ],
+          "position": [
+            -45,
+            10,
+            -28
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "color": "#1d4ed8",
+          "label": "Dual 5V Relay Module"
+        },
+        {
+          "componentId": "comp-lcd1602",
+          "primitiveType": "DISPLAY_PANEL",
+          "dimensions": [
+            70,
+            8,
+            30
+          ],
+          "position": [
+            25,
+            24,
+            -20
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "color": "#059669",
+          "label": "16x2 Backlit LCD"
+        },
+        {
+          "componentId": "comp-soil-moisture",
+          "primitiveType": "SENSOR_MODULE",
+          "dimensions": [
+            20,
+            28,
+            12
+          ],
+          "position": [
+            -45,
+            12,
+            35
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "color": "#10b981",
+          "label": "Soil Moisture Probe Lead"
+        },
+        {
+          "componentId": "comp-solenoid",
+          "primitiveType": "CYLINDER",
+          "dimensions": [
+            28,
+            32,
+            28
+          ],
+          "position": [
+            48,
+            16,
+            25
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "color": "#d97706",
+          "label": "12V Brass Solenoid Valve"
+        },
+        {
+          "componentId": "comp-dht22",
+          "primitiveType": "SENSOR_MODULE",
+          "dimensions": [
+            16,
+            20,
+            12
+          ],
+          "position": [
+            50,
+            12,
+            -35
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "color": "#0284c7",
+          "label": "DHT22 Climate Probe"
+        },
+        {
+          "componentId": "comp-power",
+          "primitiveType": "CONNECTOR",
+          "dimensions": [
+            30,
+            14,
+            20
+          ],
+          "position": [
+            0,
+            8,
+            42
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "color": "#f59e0b",
+          "label": "12V DC Terminal & Buck Converter"
+        },
+        {
+          "componentId": "comp-terminals",
+          "primitiveType": "CONNECTOR",
+          "dimensions": [
+            40,
+            10,
+            14
+          ],
+          "position": [
+            -20,
+            8,
+            -40
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "color": "#64748b",
+          "label": "Screw Barrier Terminal"
+        }
+      ]
+    }
+  },
+  "roadmap": [
+    {
+      "id": "phase-sensor-calibration",
+      "title": "Phase 1: Soil & Climate Sensor Calibration",
+      "description": "Wire capacitive probe and DHT22 to ESP32 ADC and calibrate dry/wet soil points.",
+      "featureIds": [
+        "feature-soil-sensing",
+        "feature-climate-sensing"
+      ],
+      "tasks": [
+        "Calibrate capacitive probe in air (0%) and submerged water (100%)",
+        "Implement moving-average ADC filter on ESP32 GPIO36",
+        "Verify DHT22 1-wire timing and vapor pressure calculations"
+      ],
+      "dependsOnPhaseIds": [],
+      "completionCriteria": [
+        "Live soil volumetric water content updates stably on serial monitor"
+      ]
+    },
+    {
+      "id": "phase-solenoid-automation",
+      "title": "Phase 2: Relay & Solenoid Valve Control Loop",
+      "description": "Integrate 5V relay module with 12V solenoid valve and hardware safety timeout.",
+      "featureIds": [
+        "feature-solenoid-actuation",
+        "feature-lcd-display"
+      ],
+      "tasks": [
+        "Wire optocoupled relay to ESP32 GPIO4 with flyback protection",
+        "Implement hysteresis irrigation control algorithm",
+        "Connect 16x2 I2C LCD for real-time field status display"
+      ],
+      "dependsOnPhaseIds": [
+        "phase-sensor-calibration"
+      ],
+      "completionCriteria": [
+        "Valve reliably triggers at <35% soil moisture and closes at >65%"
+      ]
+    },
+    {
+      "id": "phase-weatherproof-field-deploy",
+      "title": "Phase 3: Weatherproof Enclosure & Field Deployment",
+      "description": "Mount assembly inside IP67 sealed box with PG7 cable glands and perform soak testing.",
+      "featureIds": [
+        "feature-soil-sensing",
+        "feature-solenoid-actuation"
+      ],
+      "tasks": [
+        "Mount ESP32, relay, and buck converter on DIN/standoff plate",
+        "Seal cable entries using PG7 waterproof glands",
+        "Conduct continuous 48-hour automated irrigation stress test"
+      ],
+      "dependsOnPhaseIds": [
+        "phase-solenoid-automation"
+      ],
+      "completionCriteria": [
+        "Controller operates autonomously under water spray exposure without leak"
+      ]
+    }
+  ],
+  "assumptions": [
+    {
+      "id": "asm-12v-power",
+      "description": "A continuous 12V DC power source or mains adapter is available near the irrigation manifold.",
+      "affectedEntityIds": [
+        "comp-power",
+        "comp-solenoid"
+      ],
+      "reason": "High-pressure solenoid valve requires 12V DC coil excitation."
+    }
+  ],
+  "openQuestions": [
+    {
+      "id": "q-water-pressure",
+      "question": "What is the static water line pressure available at the drip irrigation inlet manifold?",
+      "affectedEntityIds": [
+        "comp-solenoid",
+        "feature-solenoid-actuation"
+      ],
+      "whyItMatters": "Direct-acting vs pilot-operated solenoid valves require specific minimum line pressure (0.02 MPa)."
+    }
+  ],
+  "risks": [
+    {
+      "id": "risk-heater-burnin",
+      "title": "Sensor Drift During Initial Heating",
+      "severity": "MEDIUM",
+      "mitigation": "Include software lockout requiring 24 hours of burn-in heating before saving baseline calibration."
+    },
+    {
+      "id": "risk-silicone-poisoning",
+      "title": "Sensor Poisoning from Aerosols",
+      "severity": "HIGH",
+      "mitigation": "Clearly label enclosure warnings against using silicone adhesives, hairspray, or VOC cleaners near unit."
+    }
+  ],
+  "recommendations": [
+    {
+      "id": "rec-backup-battery",
+      "category": "FUTURE_FEATURE",
+      "title": "LiPo Battery Backup with Charger IC",
+      "description": "Consider adding a single-cell LiPo battery and TP4056 charging IC for 2-hour backup during power outages."
+    }
+  ]
+}

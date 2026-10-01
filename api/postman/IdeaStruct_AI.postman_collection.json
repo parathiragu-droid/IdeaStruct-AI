@@ -1,0 +1,315 @@
+{
+  "info": {
+    "name": "IdeaStruct AI Planner API",
+    "_postman_id": "8f88efcb-7762-4ef9-bb99-826d97c3905e",
+    "description": "Comprehensive API collection for IdeaStruct AI Software Project Planner, Blueprint Generator, and Deterministic Validator.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. System Health",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "health"]
+        },
+        "description": "Liveness probe and real MongoDB ping."
+      },
+      "response": []
+    },
+    {
+      "name": "2. Create Project Draft",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 201) {",
+              "    var jsonData = pm.response.json();",
+              "    pm.environment.set('projectId', jsonData.id);",
+              "    pm.environment.set('projectRevision', jsonData.revision);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"CampusBite — Student Campus Food Ordering\",\n  \"idea\": \"A software system for university students to pre-order food from on-campus dining halls and food trucks to skip long lunch queues between classes.\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/projects",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "projects"]
+        },
+        "description": "Creates a new project draft without blueprint."
+      },
+      "response": []
+    },
+    {
+      "name": "3. List Projects (Paginated)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/projects?page=0&size=20",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "projects"],
+          "query": [
+            { "key": "page", "value": "0" },
+            { "key": "size", "value": "20" }
+          ]
+        },
+        "description": "Retrieves paginated list of project summaries."
+      },
+      "response": []
+    },
+    {
+      "name": "4. Get Project Detail",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "    var jsonData = pm.response.json();",
+              "    pm.environment.set('projectRevision', jsonData.revision);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/projects/{{projectId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "projects", "{{projectId}}"]
+        },
+        "description": "Fetches full project document with embedded blueprint and validation findings."
+      },
+      "response": []
+    },
+    {
+      "name": "5. Update Project Title/Idea (Revision Protected)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "    var jsonData = pm.response.json();",
+              "    pm.environment.set('projectRevision', jsonData.revision);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "If-Match", "value": "{{projectRevision}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"CampusBite — Updated Title\",\n  \"idea\": \"Updated idea description with more than fifty characters to fulfill the validation requirements cleanly.\",\n  \"expectedRevision\": {{projectRevision}}\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/projects/{{projectId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "projects", "{{projectId}}"]
+        },
+        "description": "Updates title and idea. Marks blueprintOutdated if idea has changed."
+      },
+      "response": []
+    },
+    {
+      "name": "6. Generate Blueprint (DEMO Mode)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "    var jsonData = pm.response.json();",
+              "    pm.environment.set('projectRevision', jsonData.revision);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"mode\": \"DEMO\",\n  \"expectedRevision\": {{projectRevision}}\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/projects/{{projectId}}/generate",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "projects", "{{projectId}}", "generate"]
+        },
+        "description": "Generates initial canonical blueprint using deterministic offline fixture (source: DEMO, provider: null)."
+      },
+      "response": []
+    },
+    {
+      "name": "7. Generate Blueprint (LIVE_AI Mode)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "    var jsonData = pm.response.json();",
+              "    pm.environment.set('projectRevision', jsonData.revision);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"mode\": \"LIVE_AI\",\n  \"expectedRevision\": {{projectRevision}}\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/projects/{{projectId}}/generate",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "projects", "{{projectId}}", "generate"]
+        },
+        "description": "Calls configured Gemini API provider. Returns 503 if GEMINI_API_KEY is not configured on backend."
+      },
+      "response": []
+    },
+    {
+      "name": "8. Update Blueprint (Manual Edit)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "    var jsonData = pm.response.json();",
+              "    pm.environment.set('projectRevision', jsonData.revision);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "If-Match", "value": "{{projectRevision}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"expectedRevision\": {{projectRevision}},\n  \"blueprint\": {\n    \"schemaVersion\": \"1.0\",\n    \"overview\": {\n      \"summary\": \"Manual edit test summary with sufficient detail.\",\n      \"targetAudience\": [\"University Students\"],\n      \"coreValueProp\": \"Faster dining\",\n      \"scope\": { \"mvp\": [\"Order food\"], \"later\": [\"Delivery\"] }\n    },\n    \"features\": [],\n    \"roles\": [],\n    \"requirements\": [],\n    \"database\": {\n      \"paradigm\": \"DOCUMENT\",\n      \"collections\": [],\n      \"relationships\": []\n    },\n    \"apis\": [],\n    \"uiScreens\": [],\n    \"roadmap\": []\n  }\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/projects/{{projectId}}/blueprint",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "projects", "{{projectId}}", "blueprint"]
+        },
+        "description": "Saves manual edit with strict schema validation and optimistic revision check. Provenance becomes USER_EDITED."
+      },
+      "response": []
+    },
+    {
+      "name": "9. Propose Blueprint Regeneration",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "If-Match", "value": "{{projectRevision}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"section\": \"database\",\n  \"instructions\": \"Add loyalty points collection for campus food purchases\",\n  \"expectedRevision\": {{projectRevision}}\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/projects/{{projectId}}/regenerate",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "projects", "{{projectId}}", "regenerate"]
+        },
+        "description": "Produces candidate section proposal without altering persisted project state until client applies it."
+      },
+      "response": []
+    },
+    {
+      "name": "10. Deterministic Blueprint Validation",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "    var jsonData = pm.response.json();",
+              "    pm.environment.set('projectRevision', jsonData.revision);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "If-Match", "value": "{{projectRevision}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"expectedRevision\": {{projectRevision}}\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/projects/{{projectId}}/validate",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "projects", "{{projectId}}", "validate"]
+        },
+        "description": "Deterministically evaluates comprehensive architectural Plan Check validation rules against saved blueprint and stores findings."
+      },
+      "response": []
+    },
+    {
+      "name": "11. Delete Project (Revision Protected)",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          { "key": "If-Match", "value": "{{projectRevision}}" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/projects/{{projectId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "projects", "{{projectId}}"]
+        },
+        "description": "Deletes the project aggregate from MongoDB if revision matches."
+      },
+      "response": []
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "status": "UP",
+  "backend": "RUNNING",
+  "timestamp": "2026-09-24T10:00:00Z",
+  "database": {
+    "status": "UP",
+    "databaseName": "ideastruct_ai",
+    "message": "MongoDB is reachable and responding to ping"
+  }
+}

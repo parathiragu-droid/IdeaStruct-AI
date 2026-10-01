@@ -1,0 +1,177 @@
+{
+  "software": {
+    "projectId": "6abcdf94a89669672432232a",
+    "revisionBefore": 1,
+    "projectType": "SOFTWARE",
+    "durationMs": 17819,
+    "httpStatus": 200,
+    "requestUrl": "http://localhost:5173/api/projects/6abcdf94a89669672432232a/generate",
+    "revisionAfter": 2,
+    "provider": "google",
+    "model": "gemini-3.5-flash-lite",
+    "source": "LIVE_AI",
+    "schemaVersion": "2.0",
+    "persisted": true
+  },
+  "hardware": {
+    "projectId": "6abcdfaca89669672432232b",
+    "revisionBefore": 1,
+    "projectType": "HARDWARE",
+    "durationMs": 14816,
+    "httpStatus": 200,
+    "requestUrl": "http://localhost:5173/api/projects/6abcdfaca89669672432232b/generate",
+    "threeDVisible": true,
+    "revisionAfter": 2,
+    "provider": "google",
+    "model": "gemini-3.5-flash-lite",
+    "source": "LIVE_AI",
+    "schemaVersion": "2.0",
+    "persisted": true,
+    "componentsCount": 7,
+    "wiringCount": 11,
+    "has3DData": true
+  },
+  "hybrid": {
+    "projectId": "6abcdfc0a89669672432232c",
+    "revisionBefore": 1,
+    "projectType": "HYBRID",
+    "durationMs": 19462,
+    "httpStatus": 200,
+    "requestUrl": "http://localhost:5173/api/projects/6abcdfc0a89669672432232c/generate",
+    "revisionAfter": 2,
+    "provider": "google",
+    "model": "gemini-3.5-flash-lite",
+    "source": "LIVE_AI",
+    "schemaVersion": "2.0",
+    "persisted": true,
+    "hasSoftwareSection": true,
+    "hasHardwareSection": true
+  },
+  "devtools": {
+    "consoleErrors": [
+      "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+      "[Live AI Generation Error] ApiError: Gemini model is currently experiencing high demand. Please try again shortly.\n    at request (http://localhost:5173/src/services/api.js:45:10)\n    at async handleGenerateBlueprint (http://localhost:5173/src/pages/ProjectDetailPage.jsx:188:20)"
+    ],
+    "networkErrors": [],
+    "liveAiRequests": [
+      {
+        "url": "http://localhost:5173/api/projects/6abcdf94a89669672432232a/generate",
+        "status": 200,
+        "ok": true,
+        "timing": {
+          "startTime": 1790762901311.4163,
+          "domainLookupStart": -1,
+          "domainLookupEnd": -1,
+          "connectStart": -1,
+          "secureConnectionStart": -1,
+          "connectEnd": -1,
+          "requestStart": 0.148,
+          "responseStart": 17798.389,
+          "responseEnd": 17801.807
+        }
+      },
+      {
+        "url": "http://localhost:5173/api/projects/6abcdfaca89669672432232b/generate",
+        "status": 200,
+        "ok": true,
+        "timing": {
+          "startTime": 1790762925110.9531,
+          "domainLookupStart": -1,
+          "domainLookupEnd": -1,
+          "connectStart": -1,
+          "secureConnectionStart": -1,
+          "connectEnd": -1,
+          "requestStart": 0.138,
+          "responseStart": 14787.43,
+          "responseEnd": 14788.33
+        }
+      },
+      {
+        "url": "http://localhost:5173/api/projects/6abcdfc0a89669672432232c/generate",
+        "status": 200,
+        "ok": true,
+        "timing": {
+          "startTime": 1790762945198.7268,
+          "domainLookupStart": -1,
+          "domainLookupEnd": -1,
+          "connectStart": -1,
+          "secureConnectionStart": -1,
+          "connectEnd": -1,
+          "requestStart": 0.162,
+          "responseStart": 19434.712,
+          "responseEnd": 19436.396
+        }
+      },
+      {
+        "url": "http://localhost:5173/api/projects/6abcdfdaa89669672432232d/generate",
+        "status": 503,
+        "ok": false,
+        "timing": {
+          "startTime": 1790762970653.69,
+          "domainLookupStart": -1,
+          "domainLookupEnd": -1,
+          "connectStart": -1,
+          "secureConnectionStart": -1,
+          "connectEnd": -1,
+          "requestStart": -1,
+          "responseStart": 613.77,
+          "responseEnd": 614.176
+        }
+      },
+      {
+        "url": "http://localhost:5173/api/projects/6abcdfdaa89669672432232d/generate",
+        "status": 200,
+        "ok": true,
+        "timing": {
+          "startTime": 1790762971638.833,
+          "domainLookupStart": -1,
+          "domainLookupEnd": -1,
+          "connectStart": -1,
+          "secureConnectionStart": -1,
+          "connectEnd": -1,
+          "requestStart": 0.142,
+          "responseStart": 21.5,
+          "responseEnd": 22.296
+        }
+      }
+    ]
+  },
+  "postman": {
+    "software": {
+      "id": "6abcdf94a89669672432232a",
+      "status": 200,
+      "revision": 2,
+      "schemaVersion": "2.0",
+      "featuresCount": 5,
+      "apisCount": 2,
+      "rolesCount": 3
+    },
+    "hardware": {
+      "id": "6abcdfaca89669672432232b",
+      "status": 200,
+      "revision": 2,
+      "schemaVersion": "2.0",
+      "componentsCount": 7,
+      "connectionsCount": 4,
+      "threeDGenerated": true
+    },
+    "hybrid": {
+      "id": "6abcdfc0a89669672432232c",
+      "status": 200,
+      "revision": 2,
+      "schemaVersion": "2.0",
+      "hasSoftware": true,
+      "hasHardware": true,
+      "integrationsCount": 1,
+      "hardwareComponentsCount": 8
+    }
+  },
+  "retryPolicy": {},
+  "failureRegression": {
+    "visibleErrorCard": true,
+    "retryButton": true,
+    "demoFallback": true,
+    "noSilentReset": true
+  },
+  "regressions": {}
+}

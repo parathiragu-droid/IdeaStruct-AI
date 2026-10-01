@@ -1,0 +1,433 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ideastruct.ai/schemas/blueprint.v2.json",
+  "title": "IdeaStructBlueprint",
+  "description": "Expanded canonical schema for an IdeaStruct AI engineering blueprint supporting Software, Hardware, and Hybrid projects.",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "overview",
+    "features",
+    "roles",
+    "requirements",
+    "roadmap",
+    "assumptions",
+    "openQuestions"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "enum": ["1.0", "2.0"]
+    },
+    "projectType": {
+      "type": "string",
+      "enum": ["SOFTWARE", "HARDWARE", "HYBRID"]
+    },
+    "classification": {
+      "type": "object",
+      "required": ["type", "reason", "confidence"],
+      "properties": {
+        "type": { "type": "string", "enum": ["SOFTWARE", "HARDWARE", "HYBRID"] },
+        "reason": { "type": "string", "minLength": 5, "maxLength": 1000 },
+        "confidence": { "type": "string", "enum": ["LOW", "MEDIUM", "HIGH"] }
+      }
+    },
+    "overview": {
+      "type": "object",
+      "required": ["projectName", "summary", "problemStatement", "targetUsers", "goals", "scope", "outOfScope"],
+      "properties": {
+        "projectName": { "type": "string", "minLength": 2, "maxLength": 150 },
+        "summary": { "type": "string", "minLength": 10, "maxLength": 2000 },
+        "problemStatement": { "type": "string", "minLength": 10, "maxLength": 3000 },
+        "targetUsers": { "type": "array", "items": { "type": "string" } },
+        "goals": { "type": "array", "items": { "type": "string" } },
+        "scope": { "type": "array", "items": { "type": "string" } },
+        "outOfScope": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "estimates": {
+      "type": "object",
+      "required": ["difficulty", "estimatedDuration", "recommendedTeamSize", "teamRoles", "estimatedCost"],
+      "properties": {
+        "difficulty": { "type": "string" },
+        "estimatedDuration": { "type": "string" },
+        "recommendedTeamSize": { "type": ["integer", "string"] },
+        "teamRoles": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["role", "count", "responsibility"],
+            "properties": {
+              "role": { "type": "string" },
+              "count": { "type": "integer" },
+              "responsibility": { "type": "string" }
+            }
+          }
+        },
+        "estimatedCost": {
+          "type": "object",
+          "required": ["currency", "minimum", "maximum", "basis", "disclaimer"],
+          "properties": {
+            "currency": { "type": "string" },
+            "minimum": { "type": "number" },
+            "maximum": { "type": "number" },
+            "basis": { "type": "string" },
+            "disclaimer": { "type": "string" }
+          }
+        },
+        "resources": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "type", "purpose"],
+            "properties": {
+              "name": { "type": "string" },
+              "type": { "type": "string" },
+              "purpose": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "features": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "description", "priority", "roleIds", "needsApi", "needsUi", "needsPersistence"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^feature-[a-z0-9-]+$" },
+          "name": { "type": "string", "minLength": 2, "maxLength": 120 },
+          "description": { "type": "string", "minLength": 5, "maxLength": 1000 },
+          "priority": { "type": "string", "enum": ["HIGH", "MEDIUM", "LOW"] },
+          "roleIds": { "type": "array", "items": { "type": "string" } },
+          "needsApi": { "type": "boolean" },
+          "needsUi": { "type": "boolean" },
+          "needsPersistence": { "type": "boolean" }
+        }
+      }
+    },
+    "roles": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "description", "permissions", "interactive"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^role-[a-z0-9-]+$" },
+          "name": { "type": "string", "minLength": 2, "maxLength": 80 },
+          "description": { "type": "string", "minLength": 5, "maxLength": 500 },
+          "permissions": { "type": "array", "items": { "type": "string" } },
+          "interactive": { "type": "boolean" }
+        }
+      }
+    },
+    "requirements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "type", "description", "featureIds", "acceptanceCriteria", "source"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^req-[a-z0-9-]+$" },
+          "type": { "type": "string", "enum": ["FUNCTIONAL", "NON_FUNCTIONAL"] },
+          "description": { "type": "string", "minLength": 5, "maxLength": 1000 },
+          "featureIds": { "type": "array", "items": { "type": "string" } },
+          "acceptanceCriteria": { "type": "array", "items": { "type": "string" } },
+          "source": { "type": "string", "enum": ["USER_STATED", "AI_ASSUMED"] }
+        }
+      }
+    },
+    "software": {
+      "type": "object",
+      "properties": {
+        "applicable": { "type": "boolean" },
+        "architecture": { "type": ["object", "string"] },
+        "recommendedTechStack": {
+          "type": "object",
+          "properties": {
+            "frontend": { "type": "object" },
+            "backend": { "type": "object" },
+            "database": { "type": "object" },
+            "deployment": { "type": "object" },
+            "testing": { "type": "object" },
+            "optionalServices": { "type": "array" }
+          }
+        },
+        "modules": { "type": "array" },
+        "database": { "type": "object" },
+        "apis": { "type": "array" },
+        "screens": { "type": "array" },
+        "userFlows": { "type": "array" },
+        "integrations": { "type": "array" },
+        "testingStrategy": { "type": ["object", "string"] },
+        "deploymentPlan": { "type": ["object", "string"] },
+        "prototype": {
+          "type": "object",
+          "properties": {
+            "generated": { "type": "boolean" },
+            "platform": { "type": "string", "enum": ["WEB", "MOBILE", "DESKTOP"] },
+            "startScreenId": { "type": "string" },
+            "screens": { "type": "array" },
+            "navigation": { "type": "array" }
+          }
+        }
+      }
+    },
+    "hardware": {
+      "type": "object",
+      "properties": {
+        "applicable": { "type": "boolean" },
+        "workingPrinciple": { "type": "string" },
+        "architecture": { "type": ["object", "string"] },
+        "components": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "name", "category", "purpose", "quantity", "specification"],
+            "properties": {
+              "id": { "type": "string" },
+              "name": { "type": "string" },
+              "category": {
+                "type": "string",
+                "enum": [
+                  "MICROCONTROLLER",
+                  "SENSOR",
+                  "ACTUATOR",
+                  "DISPLAY",
+                  "COMMUNICATION",
+                  "POWER",
+                  "PASSIVE",
+                  "MECHANICAL",
+                  "OTHER"
+                ]
+              },
+              "purpose": { "type": "string" },
+              "quantity": { "type": "integer" },
+              "specification": { "type": "string" },
+              "alternatives": { "type": "array", "items": { "type": "string" } },
+              "estimatedUnitCost": { "type": "number" },
+              "estimatedTotalCost": { "type": "number" }
+            }
+          }
+        },
+        "controllers": { "type": "array" },
+        "sensors": { "type": "array" },
+        "actuators": { "type": "array" },
+        "communicationModules": { "type": "array" },
+        "powerRequirements": { "type": ["object", "string"] },
+        "pinConnections": { "type": "array" },
+        "connections": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "fromComponentId", "fromPin", "toComponentId", "toPin", "signalType"],
+            "properties": {
+              "id": { "type": "string" },
+              "fromComponentId": { "type": "string" },
+              "fromPin": { "type": "string" },
+              "toComponentId": { "type": "string" },
+              "toPin": { "type": "string" },
+              "signalType": { "type": "string" },
+              "voltage": { "type": "string" },
+              "purpose": { "type": "string" },
+              "notes": { "type": "string" }
+            }
+          }
+        },
+        "firmwareLogic": { "type": ["object", "string"] },
+        "diagrams": { "type": "object" },
+        "testingPlan": { "type": ["array", "string"] },
+        "safetyNotes": { "type": "array", "items": { "type": "string" } },
+        "enclosure": { "type": ["object", "string"] },
+        "threeDModel": {
+          "type": "object",
+          "properties": {
+            "generated": { "type": "boolean" },
+            "enclosure": { "type": "object" },
+            "components": { "type": "array" }
+          }
+        }
+      }
+    },
+    "database": {
+      "type": "object",
+      "properties": {
+        "collections": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "name", "description", "featureIds", "fields", "indexes"],
+            "properties": {
+              "id": { "type": "string", "pattern": "^collection-[a-z0-9-]+$" },
+              "name": { "type": "string", "minLength": 2, "maxLength": 60 },
+              "description": { "type": "string", "minLength": 5, "maxLength": 500 },
+              "featureIds": { "type": "array", "items": { "type": "string" } },
+              "fields": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["name", "dataType", "required", "unique", "description"],
+                  "properties": {
+                    "name": { "type": "string", "minLength": 1, "maxLength": 60 },
+                    "dataType": { "type": "string", "minLength": 1, "maxLength": 60 },
+                    "required": { "type": "boolean" },
+                    "unique": { "type": "boolean" },
+                    "description": { "type": "string", "maxLength": 300 },
+                    "embeddedShape": { "type": "object" }
+                  }
+                }
+              },
+              "indexes": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        },
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "sourceCollectionId", "targetCollectionId", "sourceField", "targetField", "cardinality", "description"],
+            "properties": {
+              "id": { "type": "string", "pattern": "^rel-[a-z0-9-]+$" },
+              "sourceCollectionId": { "type": "string" },
+              "targetCollectionId": { "type": "string" },
+              "sourceField": { "type": "string" },
+              "targetField": { "type": "string" },
+              "cardinality": { "type": "string", "enum": ["ONE_TO_ONE", "ONE_TO_MANY", "MANY_TO_MANY"] },
+              "description": { "type": "string", "maxLength": 400 }
+            }
+          }
+        }
+      }
+    },
+    "apis": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "method", "path", "purpose", "featureIds", "roleIds", "authRequired", "successStatus", "errorCases"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^api-[a-z0-9-]+$" },
+          "method": { "type": "string", "enum": ["GET", "POST", "PUT", "PATCH", "DELETE"] },
+          "path": { "type": "string", "pattern": "^/[a-zA-Z0-9_/{}-]+$" },
+          "purpose": { "type": "string", "minLength": 5, "maxLength": 400 },
+          "featureIds": { "type": "array", "items": { "type": "string" } },
+          "roleIds": { "type": "array", "items": { "type": "string" } },
+          "authRequired": { "type": "boolean" },
+          "requestExample": { "type": ["object", "string", "null"] },
+          "responseExample": { "type": ["object", "array", "string", "null"] },
+          "successStatus": { "type": "integer" },
+          "errorCases": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["status", "description"],
+              "properties": {
+                "status": { "type": "integer" },
+                "code": { "type": "string" },
+                "description": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "uiScreens": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "route", "purpose", "roleIds", "featureIds", "components", "states", "actions"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^screen-[a-z0-9-]+$" },
+          "name": { "type": "string", "minLength": 2, "maxLength": 80 },
+          "route": { "type": "string", "minLength": 1, "maxLength": 100 },
+          "purpose": { "type": "string", "minLength": 5, "maxLength": 400 },
+          "roleIds": { "type": "array", "items": { "type": "string" } },
+          "featureIds": { "type": "array", "items": { "type": "string" } },
+          "components": { "type": "array", "items": { "type": "string" } },
+          "states": { "type": "array", "items": { "type": "string" } },
+          "actions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["id", "label", "kind"],
+              "properties": {
+                "id": { "type": "string" },
+                "label": { "type": "string" },
+                "kind": { "type": "string", "enum": ["NAVIGATION", "SUBMIT", "MUTATION", "DISMISS", "FILTER"] },
+                "targetScreenId": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "roadmap": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "description", "featureIds", "tasks", "dependsOnPhaseIds", "completionCriteria"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^phase-[a-z0-9-]+$" },
+          "title": { "type": "string", "minLength": 2, "maxLength": 100 },
+          "description": { "type": "string", "minLength": 5, "maxLength": 600 },
+          "featureIds": { "type": "array", "items": { "type": "string" } },
+          "tasks": { "type": "array", "items": { "type": "string" } },
+          "dependsOnPhaseIds": { "type": "array", "items": { "type": "string" } },
+          "completionCriteria": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "risks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "severity", "mitigation"],
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "severity": { "type": "string", "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"] },
+          "mitigation": { "type": "string" }
+        }
+      }
+    },
+    "recommendations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "description"],
+        "properties": {
+          "id": { "type": "string" },
+          "category": { "type": "string" },
+          "title": { "type": "string" },
+          "description": { "type": "string" }
+        }
+      }
+    },
+    "assumptions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "description", "affectedEntityIds", "reason"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^asm-[a-z0-9-]+$" },
+          "description": { "type": "string", "minLength": 5, "maxLength": 600 },
+          "affectedEntityIds": { "type": "array", "items": { "type": "string" } },
+          "reason": { "type": "string", "minLength": 5, "maxLength": 600 }
+        }
+      }
+    },
+    "openQuestions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "question", "affectedEntityIds", "whyItMatters"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^q-[a-z0-9-]+$" },
+          "question": { "type": "string", "minLength": 5, "maxLength": 600 },
+          "affectedEntityIds": { "type": "array", "items": { "type": "string" } },
+          "whyItMatters": { "type": "string", "minLength": 5, "maxLength": 600 }
+        }
+      }
+    },
+    "validation": {
+      "type": ["object", "array"]
+    }
+  }
+}
