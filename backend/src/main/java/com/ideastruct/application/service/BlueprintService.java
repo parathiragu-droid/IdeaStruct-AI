@@ -16,7 +16,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -357,6 +360,45 @@ public class BlueprintService {
             } else if (bp.containsKey("uiScreens") && !sw.containsKey("screens")) {
                 sw.put("screens", bp.get("uiScreens"));
             }
+        }
+
+        // Canonical normalization for roadmap phases (converts string completionCriteria/tasks into Lists)
+        if (bp.containsKey("roadmap") && bp.get("roadmap") instanceof List<?> rawRoadmap) {
+            List<Map<String, Object>> normalizedRoadmap = new ArrayList<>();
+            for (Object phaseObj : rawRoadmap) {
+                if (phaseObj instanceof Map<?, ?> rawPhase) {
+                    Map<String, Object> phase = new LinkedHashMap<>();
+                    for (Map.Entry<?, ?> entry : rawPhase.entrySet()) {
+                        phase.put(String.valueOf(entry.getKey()), entry.getValue());
+                    }
+                    Object cc = phase.get("completionCriteria");
+                    if (cc instanceof String s) {
+                        phase.put("completionCriteria", s.isBlank() ? Collections.emptyList() : List.of(s.trim()));
+                    } else if (cc == null) {
+                        phase.put("completionCriteria", Collections.emptyList());
+                    }
+                    Object tasks = phase.get("tasks");
+                    if (tasks instanceof String s) {
+                        phase.put("tasks", s.isBlank() ? Collections.emptyList() : List.of(s.trim()));
+                    } else if (tasks == null) {
+                        phase.put("tasks", Collections.emptyList());
+                    }
+                    Object fIds = phase.get("featureIds");
+                    if (fIds instanceof String s) {
+                        phase.put("featureIds", s.isBlank() ? Collections.emptyList() : List.of(s.trim()));
+                    } else if (fIds == null) {
+                        phase.put("featureIds", Collections.emptyList());
+                    }
+                    Object depIds = phase.get("dependsOnPhaseIds");
+                    if (depIds instanceof String s) {
+                        phase.put("dependsOnPhaseIds", s.isBlank() ? Collections.emptyList() : List.of(s.trim()));
+                    } else if (depIds == null) {
+                        phase.put("dependsOnPhaseIds", Collections.emptyList());
+                    }
+                    normalizedRoadmap.add(phase);
+                }
+            }
+            bp.put("roadmap", normalizedRoadmap);
         }
         return bp;
     }

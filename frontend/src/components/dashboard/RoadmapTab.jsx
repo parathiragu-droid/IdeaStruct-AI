@@ -1,16 +1,17 @@
 import SectionIntro from '../common/SectionIntro';
 import TechnicalDetails from '../common/TechnicalDetails';
 import { resolveFeatureNames, resolvePhaseTitles } from '../../utils/entityResolvers';
+import { normalizeRoadmap, safeString } from '../../utils/roadmapNormalizer';
 
 /**
  * RoadmapTab Component
  *
  * Displays recommended build roadmap phases ordered by architectural dependency,
  * avoiding artificial delivery dates or fake progress bars.
+ * Resilient against all valid roadmap data shapes (Software, Hardware, Hybrid).
  */
 export default function RoadmapTab({ blueprint }) {
-  const rawPhases = blueprint?.roadmap?.phases || (Array.isArray(blueprint?.roadmap) ? blueprint.roadmap : []);
-  const roadmap = Array.isArray(rawPhases) ? rawPhases.filter(Boolean) : [];
+  const roadmap = normalizeRoadmap(blueprint?.roadmap);
   const features = Array.isArray(blueprint?.features) ? blueprint.features.filter(Boolean) : [];
 
   const ACCENT_COLORS = ['var(--accent-cyan)', 'var(--accent-purple)', 'var(--accent-orange)', 'var(--accent-green)'];
@@ -34,7 +35,12 @@ export default function RoadmapTab({ blueprint }) {
 
       {roadmap.length === 0 ? (
         <div className="card" style={{ textAlign: 'center', padding: '2.5rem', color: 'var(--text-muted)' }}>
-          No roadmap phases are currently defined.
+          <p style={{ margin: 0, fontWeight: 500, fontSize: '0.9375rem' }}>
+            Roadmap information is not available for this project.
+          </p>
+          <p style={{ margin: '0.375rem 0 0 0', fontSize: '0.8125rem' }}>
+            No roadmap phases are currently defined.
+          </p>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
@@ -44,9 +50,9 @@ export default function RoadmapTab({ blueprint }) {
             const accent = ACCENT_COLORS[idx % ACCENT_COLORS.length];
 
             return (
-              <div key={phase.id} className="card" style={{ borderLeft: `4px solid ${accent}` }}>
+              <div key={phase.id || `phase-${idx}`} className="card" style={{ borderLeft: `4px solid ${accent}` }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.5rem' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
                     <span
                       aria-label={`Phase ${idx + 1}`}
                       title={`Phase ${idx + 1}`}
@@ -68,6 +74,11 @@ export default function RoadmapTab({ blueprint }) {
                     <h4 style={{ fontSize: '1.125rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
                       {phase.title}
                     </h4>
+                    {phase.duration && (
+                      <span className="badge badge-purple" style={{ fontSize: '0.6875rem' }}>
+                        ⏱️ {phase.duration}
+                      </span>
+                    )}
                   </div>
 
                   {/* Resolved Dependencies */}
@@ -76,7 +87,7 @@ export default function RoadmapTab({ blueprint }) {
                       <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Depends on:</span>
                       {dependencyTitles.map((depTitle, i) => (
                         <span key={i} className="badge badge-purple badge-aqua" style={{ fontSize: '0.6875rem' }}>
-                          {depTitle}
+                          {safeString(depTitle)}
                         </span>
                       ))}
                     </div>
@@ -87,9 +98,11 @@ export default function RoadmapTab({ blueprint }) {
                   )}
                 </div>
 
-                <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: '0.75rem' }}>
-                  {phase.description}
-                </p>
+                {phase.description ? (
+                  <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: '0.75rem' }}>
+                    {phase.description}
+                  </p>
+                ) : null}
 
                 {featureNames.length > 0 && (
                   <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
@@ -106,7 +119,7 @@ export default function RoadmapTab({ blueprint }) {
                     {phase.tasks && phase.tasks.length > 0 ? (
                       <ul style={{ paddingLeft: '1.25rem', fontSize: '0.8125rem', color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0 }}>
                         {phase.tasks.map((task, tIdx) => (
-                          <li key={tIdx} style={{ marginBottom: '0.25rem' }}>{task}</li>
+                          <li key={tIdx} style={{ marginBottom: '0.25rem' }}>{safeString(task)}</li>
                         ))}
                       </ul>
                     ) : (
@@ -122,7 +135,7 @@ export default function RoadmapTab({ blueprint }) {
                     {phase.completionCriteria && phase.completionCriteria.length > 0 ? (
                       <ul style={{ paddingLeft: '1.25rem', fontSize: '0.8125rem', color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0 }}>
                         {phase.completionCriteria.map((crit, cIdx) => (
-                          <li key={cIdx} style={{ marginBottom: '0.25rem' }}>{crit}</li>
+                          <li key={cIdx} style={{ marginBottom: '0.25rem' }}>{safeString(crit)}</li>
                         ))}
                       </ul>
                     ) : (
@@ -131,12 +144,26 @@ export default function RoadmapTab({ blueprint }) {
                   </div>
                 </div>
 
+                {/* Optional Milestones / Deliverables */}
+                {phase.milestones && phase.milestones.length > 0 && (
+                  <div style={{ marginTop: '0.75rem', padding: '0.625rem 0.875rem', backgroundColor: 'var(--bg-elevated)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-default)' }}>
+                    <h5 style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--text-muted)', marginBottom: '0.375rem' }}>
+                      Deliverables & Milestones
+                    </h5>
+                    <ul style={{ paddingLeft: '1.25rem', fontSize: '0.8125rem', color: 'var(--text-secondary)', margin: 0 }}>
+                      {phase.milestones.map((m, mIdx) => (
+                        <li key={mIdx} style={{ marginBottom: '0.25rem' }}>{safeString(m)}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
                 {/* Collapsed Technical Details */}
                 <TechnicalDetails summary="Phase technical details" style={{ marginTop: '0.75rem' }}>
                   <div style={{ fontSize: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                    <div><strong>Phase ID:</strong> <code>{phase.id}</code></div>
-                    <div><strong>Depends on Phase IDs:</strong> <code>{phase.dependsOnPhaseIds?.join(', ') || 'none'}</code></div>
-                    <div><strong>Linked Feature IDs:</strong> <code>{phase.featureIds?.join(', ') || 'none'}</code></div>
+                    <div><strong>Phase ID:</strong> <code>{safeString(phase.id)}</code></div>
+                    <div><strong>Depends on Phase IDs:</strong> <code>{Array.isArray(phase.dependsOnPhaseIds) && phase.dependsOnPhaseIds.length > 0 ? phase.dependsOnPhaseIds.join(', ') : 'none'}</code></div>
+                    <div><strong>Linked Feature IDs:</strong> <code>{Array.isArray(phase.featureIds) && phase.featureIds.length > 0 ? phase.featureIds.join(', ') : 'none'}</code></div>
                   </div>
                 </TechnicalDetails>
               </div>

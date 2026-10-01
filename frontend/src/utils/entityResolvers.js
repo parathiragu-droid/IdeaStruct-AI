@@ -73,7 +73,13 @@ export function resolvePhaseTitle(phaseId, phases = []) {
   if (!phaseId || typeof phaseId !== 'string') return '';
   const list = Array.isArray(phases) ? phases.filter(Boolean) : [];
   const match = list.find((p) => p && p.id === phaseId);
-  return match?.title || phaseId;
+  if (!match) return phaseId;
+  const rawTitle = match.title ?? match.phase ?? match.name ?? phaseId;
+  if (typeof rawTitle === 'string') return rawTitle;
+  if (typeof rawTitle === 'object' && rawTitle !== null) {
+    return rawTitle.title || rawTitle.name || rawTitle.phase || phaseId;
+  }
+  return String(rawTitle);
 }
 
 /**

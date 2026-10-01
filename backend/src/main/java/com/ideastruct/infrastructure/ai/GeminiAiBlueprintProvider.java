@@ -252,7 +252,7 @@ public class GeminiAiBlueprintProvider implements AiBlueprintProvider {
             "database": { "collections": [ ... ], "relationships": [ ... ] },
             "apis": [ { "id", "method", "path", "purpose", "featureIds", "roleIds", "authRequired", "requestExample", "responseExample", "successStatus", "errorCases" } ],
             "uiScreens": [ { "id", "name", "route", "purpose", "roleIds", "featureIds", "components", "states", "actions" } ],
-            "roadmap": [ { "id", "title", "description", "featureIds", "tasks", "dependsOnPhaseIds", "completionCriteria" } ],
+            "roadmap": [ { "id": "phase-1", "title": "Phase 1: Foundation", "description": "...", "featureIds": [ "..." ], "tasks": [ "..." ], "dependsOnPhaseIds": [ "..." ], "completionCriteria": [ "..." ] } ],
             "risks": [ { "id", "title", "severity", "mitigation" } ],
             "recommendations": [ { "id", "category", "title", "description" } ],
             "assumptions": [ { "id", "description", "affectedEntityIds", "reason" } ],
