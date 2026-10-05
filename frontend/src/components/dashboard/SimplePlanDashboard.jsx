@@ -262,7 +262,7 @@ export default function SimplePlanDashboard({
             </div>
           )}
 
-          {overview.goals && overview.goals.length > 0 && (
+          {Array.isArray(overview.goals) && overview.goals.length > 0 && (
             <div style={{ padding: '1.25rem', backgroundColor: 'var(--bg-elevated)', borderRadius: 'var(--radius-md)', borderLeft: '3px solid var(--accent-green)', border: '1px solid var(--border-default)', borderLeftWidth: '3px', borderLeftColor: 'var(--accent-green)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
                 <span style={{ fontSize: '1.125rem' }}>🚀</span>

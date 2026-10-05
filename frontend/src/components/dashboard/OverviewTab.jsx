@@ -1,6 +1,12 @@
 import SectionIntro from '../common/SectionIntro';
 import TechnicalDetails from '../common/TechnicalDetails';
 
+function toList(val) {
+  if (Array.isArray(val)) return val;
+  if (typeof val === 'string' && val.trim()) return [val.trim()];
+  return [];
+}
+
 /**
  * OverviewTab Component
  *
@@ -9,8 +15,12 @@ import TechnicalDetails from '../common/TechnicalDetails';
  */
 export default function OverviewTab({ blueprint }) {
   const overview = blueprint?.overview || {};
-  const assumptions = blueprint?.assumptions || [];
-  const openQuestions = blueprint?.openQuestions || [];
+  const assumptions = toList(blueprint?.assumptions);
+  const openQuestions = toList(blueprint?.openQuestions);
+  const targetUsers = toList(overview.targetUsers);
+  const goals = toList(overview.goals);
+  const scope = toList(overview.scope);
+  const outOfScope = toList(overview.outOfScope);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -60,9 +70,9 @@ export default function OverviewTab({ blueprint }) {
           <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '0.75rem', color: 'var(--text-primary)' }}>
             Target Users
           </h3>
-          {overview.targetUsers && overview.targetUsers.length > 0 ? (
+          {targetUsers.length > 0 ? (
             <ul style={{ paddingLeft: '1.25rem', fontSize: '0.875rem', color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0 }}>
-              {overview.targetUsers.map((user, idx) => (
+              {targetUsers.map((user, idx) => (
                 <li key={idx} style={{ marginBottom: '0.375rem' }}>{user}</li>
               ))}
             </ul>
@@ -75,9 +85,9 @@ export default function OverviewTab({ blueprint }) {
           <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '0.75rem', color: 'var(--text-primary)' }}>
             Main Goals
           </h3>
-          {overview.goals && overview.goals.length > 0 ? (
+          {goals.length > 0 ? (
             <ul style={{ paddingLeft: '1.25rem', fontSize: '0.875rem', color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0 }}>
-              {overview.goals.map((goal, idx) => (
+              {goals.map((goal, idx) => (
                 <li key={idx} style={{ marginBottom: '0.375rem' }}>{goal}</li>
               ))}
             </ul>
@@ -93,9 +103,9 @@ export default function OverviewTab({ blueprint }) {
           <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '0.75rem', color: 'var(--accent-green)' }}>
             ✓ In Scope
           </h3>
-          {overview.scope && overview.scope.length > 0 ? (
+          {scope.length > 0 ? (
             <ul style={{ paddingLeft: '1.25rem', fontSize: '0.875rem', color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0 }}>
-              {overview.scope.map((item, idx) => (
+              {scope.map((item, idx) => (
                 <li key={idx} style={{ marginBottom: '0.375rem' }}>{item}</li>
               ))}
             </ul>
@@ -108,9 +118,9 @@ export default function OverviewTab({ blueprint }) {
           <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '0.75rem', color: 'var(--accent-red)' }}>
             ✗ Out of Scope (Deferred)
           </h3>
-          {overview.outOfScope && overview.outOfScope.length > 0 ? (
+          {outOfScope.length > 0 ? (
             <ul style={{ paddingLeft: '1.25rem', fontSize: '0.875rem', color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0 }}>
-              {overview.outOfScope.map((item, idx) => (
+              {outOfScope.map((item, idx) => (
                 <li key={idx} style={{ marginBottom: '0.375rem' }}>{item}</li>
               ))}
             </ul>
@@ -130,17 +140,21 @@ export default function OverviewTab({ blueprint }) {
             <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', margin: 0 }}>No explicit assumptions recorded.</p>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              {assumptions.map((asm) => (
-                <div key={asm.id} style={{ padding: '0.75rem', backgroundColor: 'var(--bg-muted)', borderRadius: 'var(--radius-md)' }}>
+              {assumptions.map((asm, idx) => (
+                <div key={asm.id || idx} style={{ padding: '0.75rem', backgroundColor: 'var(--bg-muted)', borderRadius: 'var(--radius-md)' }}>
                   <div style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.25rem' }}>
-                    {asm.description}
+                    {asm.description || asm}
                   </div>
-                  <div style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>
-                    <strong>Rationale:</strong> {asm.reason}
-                  </div>
-                  <TechnicalDetails summary="Assumption details" style={{ marginTop: '0.375rem' }}>
-                    <code>ID: {asm.id}</code>
-                  </TechnicalDetails>
+                  {asm.reason && (
+                    <div style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>
+                      <strong>Rationale:</strong> {asm.reason}
+                    </div>
+                  )}
+                  {asm.id && (
+                    <TechnicalDetails summary="Assumption details" style={{ marginTop: '0.375rem' }}>
+                      <code>ID: {asm.id}</code>
+                    </TechnicalDetails>
+                  )}
                 </div>
               ))}
             </div>
@@ -155,17 +169,21 @@ export default function OverviewTab({ blueprint }) {
             <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', margin: 0 }}>No open questions pending clarification.</p>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              {openQuestions.map((q) => (
-                <div key={q.id} style={{ padding: '0.75rem', backgroundColor: 'var(--bg-muted)', borderRadius: 'var(--radius-md)' }}>
+              {openQuestions.map((q, idx) => (
+                <div key={q.id || idx} style={{ padding: '0.75rem', backgroundColor: 'var(--bg-muted)', borderRadius: 'var(--radius-md)' }}>
                   <div style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.25rem' }}>
-                    {q.question}
+                    {q.question || q}
                   </div>
-                  <div style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>
-                    <strong>Impact:</strong> {q.whyItMatters}
-                  </div>
-                  <TechnicalDetails summary="Question details" style={{ marginTop: '0.375rem' }}>
-                    <code>ID: {q.id}</code>
-                  </TechnicalDetails>
+                  {q.whyItMatters && (
+                    <div style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>
+                      <strong>Impact:</strong> {q.whyItMatters}
+                    </div>
+                  )}
+                  {q.id && (
+                    <TechnicalDetails summary="Question details" style={{ marginTop: '0.375rem' }}>
+                      <code>ID: {q.id}</code>
+                    </TechnicalDetails>
+                  )}
                 </div>
               ))}
             </div>
