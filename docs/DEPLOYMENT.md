@@ -6,14 +6,15 @@ This document describes the production deployment architecture, setup instructio
 
 ## 1. Production Architecture Overview
 
-IdeaStruct AI uses a decoupled cloud production architecture:
+IdeaStruct AI is live in production across the following cloud tiers:
 
-| Tier | Technology | Platform | Notes |
-| :--- | :--- | :--- | :--- |
-| **Frontend** | React 19 + Vite 8 (SPA) | **Vercel** | SPA routing rewrite configured via `vercel.json`. Zero secrets exposed to client. |
-| **Backend** | Spring Boot 3.4.3 (Java 21) | **Railway** | Multi-stage Docker container build. Dynamic port binding via `$PORT`. |
-| **Database** | MongoDB 7.0+ | **MongoDB Atlas** | Managed cloud replica set. Connection authenticated over TLS via `MONGODB_URI`. |
-| **AI Provider** | Gemini 3.5 Flash Lite | **Google AI Studio** | Invoked exclusively server-side via backend. `GEMINI_API_KEY` never sent to client. |
+| Tier | Technology | Platform | Current Production URL / Reference | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| **Frontend** | React 19 + Vite 8 (SPA) | **Vercel** | `https://idea-struct-ai.vercel.app` | SPA routing rewrite configured via `vercel.json`. Zero secrets exposed to client. |
+| **Backend** | Spring Boot 3.4.3 (Java 21) | **Render** *(historical/alt: Railway)* | `https://ideastruct-api.onrender.com` | Docker container build. Dynamic port binding via `$PORT`. |
+| **Database** | MongoDB 7.0+ | **MongoDB Atlas** | Cloud replica set | Managed cloud replica set. Connection authenticated over TLS via `MONGODB_URI`. |
+| **AI Provider** | Gemini 3.5 Flash Lite | **Google AI Studio** | Server-side Gemini API proxy | Invoked exclusively server-side via backend. `GEMINI_API_KEY` never sent to client. |
+| **Repository** | Git / GitHub | **GitHub** | `parathiragu-droid/IdeaStruct-AI` | Automated CI/CD integration with Vercel and Render. |
 
 ---
 
@@ -22,21 +23,21 @@ IdeaStruct AI uses a decoupled cloud production architecture:
 > [!WARNING]
 > **Zero Secrets in Frontend**: `GEMINI_API_KEY` and `MONGODB_URI` must NEVER be exposed to the frontend or prefixed with `VITE_`.
 
-### Backend Environment Variables (Railway)
+### Backend Environment Variables (Render)
 
-| Variable | Description | Example / Default |
+| Variable | Description | Example / Production Setting |
 | :--- | :--- | :--- |
-| `PORT` | Dynamically provided by Railway host. | `${PORT:8080}` |
-| `MONGODB_URI` | MongoDB Atlas SRV connection string with database name. | `mongodb+srv://<user>:<password>@cluster0.xxxxx.mongodb.net/ideastruct_ai?retryWrites=true&w=majority` |
-| `GEMINI_API_KEY` | Google Gemini API key used for LIVE_AI generation. | `AIzaSy...` (Backend only) |
+| `PORT` | Dynamically provided by cloud host. | `${PORT:8080}` |
+| `MONGODB_URI` | MongoDB Atlas SRV connection string with database name. | `mongodb+srv://<user>:<password>@<cluster>.mongodb.net/ideastruct_ai?retryWrites=true&w=majority` |
+| `GEMINI_API_KEY` | Google Gemini API key used for LIVE_AI generation. | `AIzaSy...` (Backend only, never in frontend) |
 | `GEMINI_MODEL` | Gemini model identifier. | `gemini-3.5-flash-lite` |
-| `FRONTEND_URL` | Production URL of Vercel frontend for CORS whitelist. | `https://ideastruct-ai.vercel.app` |
+| `FRONTEND_URL` | Production URL of Vercel frontend for CORS whitelist. | `https://idea-struct-ai.vercel.app` |
 
 ### Frontend Environment Variables (Vercel)
 
-| Variable | Description | Example |
+| Variable | Description | Production Value |
 | :--- | :--- | :--- |
-| `VITE_API_BASE_URL` | Public HTTPS base URL of the Railway Spring Boot backend. | `https://ideastruct-api-production.up.railway.app` |
+| `VITE_API_BASE_URL` | Public HTTPS base URL of the Render Spring Boot backend. | `https://ideastruct-api.onrender.com` |
 
 ---
 
@@ -51,43 +52,43 @@ IdeaStruct AI uses a decoupled cloud production architecture:
 3. **Database User**:
    - Go to **Security > Database Access**.
    - Click **Add New Database User**.
-   - Authentication Method: **Password**. Set username (e.g., `ideastruct_admin`) and a strong password.
+   - Authentication Method: **Password**. Set username and a strong password.
    - Built-in Role: **Read and write to any database**.
 4. **Network Access**:
    - Go to **Security > Network Access**.
    - Click **Add IP Address**.
-   - Select **Allow Access from Anywhere** (`0.0.0.0/0`) so Railway dynamic cloud containers can connect.
+   - Select **Allow Access from Anywhere** (`0.0.0.0/0`) so dynamic cloud containers can connect.
 5. **Get Connection String**:
    - Click **Connect > Drivers**.
    - Select Java / Node.js.
    - Copy connection string:
-     `mongodb+srv://ideastruct_admin:<password>@<cluster>.mongodb.net/ideastruct_ai?retryWrites=true&w=majority`
-   - Replace `<password>` with your database user password and specify `ideastruct_ai` as the database name.
+     `mongodb+srv://<user>:<password>@<cluster>.mongodb.net/ideastruct_ai?retryWrites=true&w=majority`
 
 ---
 
-### Step B: Backend Deployment on Railway
+### Step B: Backend Deployment on Render
 
 1. **Sign in / Authorize**:
-   - Log in to [Railway](https://railway.com/) using your GitHub account.
-2. **Create New Project**:
-   - Click **New Project > Deploy from GitHub repo**.
-   - Select your IdeaStruct AI repository.
+   - Log in to [Render](https://render.com/) with GitHub.
+2. **Create Web Service**:
+   - Click **New + > Web Service**.
+   - Connect the repository: `parathiragu-droid/IdeaStruct-AI`.
 3. **Configure Service Settings**:
-   - In Railway Service Settings, set **Root Directory** to `/backend`.
-   - Railway will automatically detect `backend/Dockerfile` and `backend/railway.json`.
-4. **Add Variables**:
-   Under **Variables**, add:
+   - **Root Directory**: `backend`
+   - **Environment**: `Docker` (or Java Runtime)
+   - Render automatically uses `backend/Dockerfile`.
+4. **Add Environment Variables**:
+   Under **Environment Variables**, add:
    - `MONGODB_URI`: `<Your MongoDB Atlas connection string>`
    - `GEMINI_API_KEY`: `<Your Gemini API key>`
    - `GEMINI_MODEL`: `gemini-3.5-flash-lite`
-   - `FRONTEND_URL`: `https://ideastruct-ai.vercel.app` (or update after Vercel URL is created)
-5. **Generate Public Domain**:
-   - Under **Settings > Networking**, click **Generate Domain**.
-   - Note the generated domain (e.g., `https://ideastruct-api-production.up.railway.app`).
-6. **Verify Backend Health**:
-   - Open `https://<railway-domain>/api/health` in your browser.
-   - Expected response: HTTP 200 with database status `UP`.
+   - `FRONTEND_URL`: `https://idea-struct-ai.vercel.app`
+5. **Verify Public Domain & Health**:
+   - Public domain: `https://ideastruct-api.onrender.com`.
+   - Healthcheck path: `/api/health`.
+   - Verify: Open `https://ideastruct-api.onrender.com/api/health` in your browser. Expected response: HTTP 200 with status `UP`.
+
+*(Note: Railway deployment is preserved as an alternative historical option using `backend/railway.json` and Dockerfile).*
 
 ---
 
@@ -97,29 +98,28 @@ IdeaStruct AI uses a decoupled cloud production architecture:
    - Log in to [Vercel](https://vercel.com/) with GitHub.
 2. **Import Project**:
    - Click **Add New > Project**.
-   - Import the IdeaStruct AI repository.
+   - Import the `parathiragu-droid/IdeaStruct-AI` repository.
 3. **Configure Project Settings**:
-   - **Root Directory**: Click edit and select `frontend`.
+   - **Root Directory**: Select `frontend`.
    - **Framework Preset**: `Vite`.
    - **Build Command**: `npm run build`.
    - **Output Directory**: `dist`.
 4. **Environment Variables**:
-   - Add `VITE_API_BASE_URL` with value: `https://<your-railway-domain>`.
+   - Add `VITE_API_BASE_URL` with value: `https://ideastruct-api.onrender.com`.
 5. **Deploy**:
    - Click **Deploy**.
-   - Vercel builds the SPA and provides a production URL (e.g., `https://ideastruct-ai.vercel.app`).
+   - Production domain: `https://idea-struct-ai.vercel.app`.
 6. **Verify SPA Routing**:
-   - `frontend/vercel.json` contains rewrites mapping all routes to `/index.html`.
-   - Direct URLs like `/projects`, `/projects/new`, and `/health` resolve without 404s.
+   - `frontend/vercel.json` rewrites all requests to `/index.html`.
+   - Direct URLs like `/projects`, `/projects/new`, and `/health` resolve cleanly without 404s.
 
 ---
 
 ### Step D: Update CORS & Final Connection
 
-1. In Railway:
-   - Update `FRONTEND_URL` variable with the exact Vercel production URL.
-2. Railway redeploys the service automatically to apply the new CORS allowed origin.
-3. Open the live Vercel URL in your browser and test creating a project!
+1. In Render backend settings:
+   - Confirm `FRONTEND_URL` is set to `https://idea-struct-ai.vercel.app`.
+2. Open `https://idea-struct-ai.vercel.app` in your browser to verify full end-to-end operation!
 
 ---
 
@@ -130,7 +130,7 @@ IdeaStruct AI uses a decoupled cloud production architecture:
 - [ ] Create Software project: Overview, Architecture, Tech Stack, Prototype demo work.
 - [ ] Create Hardware project: BOM, Wiring diagram, and 3D Model viewer render with WebGL.
 - [ ] Create Hybrid project: Integration architecture and device-to-cloud sections load.
-- [ ] Generate Live AI plan: Gemini calls resolve through Railway backend and save to MongoDB Atlas.
+- [ ] Generate Live AI plan: Gemini calls resolve through Render backend and save to MongoDB Atlas.
 - [ ] Page refresh on `/projects/:id` preserves state and reloads without 404 or blank screen.
 - [ ] Responsive inspection: 1440px desktop, 1024px tablet, 768px portrait, and 375px mobile show zero horizontal overflow.
 - [ ] DevTools console check: 0 fatal console errors, 0 WebGL errors, 0 CORS blocks.
@@ -141,10 +141,10 @@ IdeaStruct AI uses a decoupled cloud production architecture:
 ## 5. Redeployment & Rollback Procedures
 
 ### Redeployment
-- **Automatic CI/CD**: Pushing commits to `main` branch triggers automatic rebuilds on both Railway and Vercel.
-- **Manual Redeploy (Railway)**: In Railway dashboard, navigate to the service and click **Redeploy**.
+- **Automatic CI/CD**: Pushing commits to `main` branch triggers automatic rebuilds on both Render and Vercel.
+- **Manual Redeploy (Render)**: In Render dashboard, navigate to `ideastruct-api` and click **Manual Deploy > Deploy latest commit**.
 - **Manual Redeploy (Vercel)**: In Vercel dashboard, navigate to **Deployments** and click **Redeploy**.
 
 ### Rollback
-- **Railway**: Go to **Deployments**, find the last known stable deployment, and click **Rollback**.
-- **Vercel**: Go to **Deployments**, select the previous successful deployment, and click **Promote to Production**.
+- **Render**: Navigate to **Deploys**, select a prior successful deploy, and click **Rollback to this deploy**.
+- **Vercel**: In **Deployments**, select the previous successful deployment and click **Promote to Production**.

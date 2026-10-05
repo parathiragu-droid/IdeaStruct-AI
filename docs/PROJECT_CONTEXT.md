@@ -10,7 +10,7 @@ Outputs include:
 - Overview (summary, problem statement, target users, goals, scope, out-of-scope boundaries)
 - Features & Requirements (functional & non-functional, acceptance criteria, traceability)
 - Roles (actors, interactive flag, permissions)
-- Project Estimates (difficulty, duration range, team roles, cost breakdown, resources)
+- Project Estimates (difficulty, duration range, team roles, resources)
 - Software Plan (tech stack recommendations with tradeoffs, architecture, database schemas, REST APIs, screens, prototype)
 - Hardware Plan (working principle, BOM components, controllers/sensors/actuators, power budget, pin schedule, wiring diagram, firmware logic, 3D model)
 - Hybrid Integration Architecture (device-to-cloud protocols and data contracts)
@@ -39,5 +39,5 @@ Outputs include:
 - **Software Prototype:** Interactive demo and wireframe navigation — *not production application code*.
 - **Hardware 3D Prototype:** Conceptual parametric physical arrangement — *not manufacturing CAD or mechanical stress simulation*.
 - **Circuit Wiring Diagram:** Engineering planning guidance — *always verify pinouts with component datasheets before physical construction*.
-- **Time & Cost Estimates:** Indicative planning approximations — *not guaranteed quotes*.
+- **Time & Team Estimates:** Indicative planning approximations.
 

@@ -8,6 +8,17 @@
     <meta name="description" content="IdeaStruct AI — AI-powered project planner for Software, Hardware, and Hybrid projects." />
     <meta property="og:image" content="/ideastruct-ai-logo.png" />
     <title>IdeaStruct AI — From Simple Ideas to Structured Project Plans</title>
+    <script>
+      (function() {
+        try {
+          var saved = localStorage.getItem('ideastruct-theme');
+          var theme = (saved === 'light' || saved === 'dark') ? saved : 'dark';
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {
+          document.documentElement.setAttribute('data-theme', 'dark');
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

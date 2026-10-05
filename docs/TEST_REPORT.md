@@ -9,15 +9,17 @@
 
 | Verification Track | Scope / Target | Result | Status |
 | :--- | :--- | :--- | :--- |
-| **Backend Automated Tests** | 89 Tests across 7 Test Classes (`.\mvnw.cmd test`) | **89 Passed / 0 Failed / 0 Skipped** | ✅ **PASSED** |
+| **Backend Automated Tests** | 95 Tests across 8 Test Classes (`.\mvnw.cmd test`) | **95 Passed / 0 Failed / 0 Skipped** | ✅ **PASSED** |
 | **Project Classifier Suite** | Software, Hardware, Hybrid Classification, Overrides & Fallbacks | **6/6 Passed / 0 Failed** | ✅ **PASSED** |
-| **Project Service Suite** | Creation, Overrides (AUTO/SW/HW/HYBRID), Updates, Revisions | **10/10 Passed / 0 Failed** | ✅ **PASSED** |
+| **Project Service Suite** | Creation, Overrides (AUTO/SW/HW/HYBRID), Updates, Revisions, Safe Delete | **12/12 Passed / 0 Failed** | ✅ **PASSED** |
+| **Project Controller Suite** | Delete Revision Safety (HTTP 400, 409, 204) via Header & Query Param | **4/4 Passed / 0 Failed** | ✅ **PASSED** |
 | **Blueprint Service Suite** | Dual v1/v2 Schemas, Prototype Whitelist, 3D Primitives, Archetype Blueprints | **18/18 Passed / 0 Failed** | ✅ **PASSED** |
 | **Validation Engine Suite** | 18+ Rules (HW Pins, Controllers, Power, 3D, Hybrid Paths, 3 Archetype Fixtures) | **36/36 Passed / 0 Failed** | ✅ **PASSED** |
 | **Gemini AI Provider Suite** | Prompt Generation, Schemas, Bounded Retries, Retry-After, Error Handling | **12/12 Passed / 0 Failed** | ✅ **PASSED** |
 | **Health Controller Suite** | Up/Degraded States, Mongo Reachability Probes | **6/6 Passed / 0 Failed** | ✅ **PASSED** |
 | **Application Context Boot** | Full Spring Context & MongoDB Repo Scanning | **1/1 Passed / 0 Failed** | ✅ **PASSED** |
-| **Frontend Automated Tests** | 16 Test Suites (`npm test`) | **16 Passed / 0 Failed** | ✅ **PASSED** |
+| **Frontend Automated Tests** | 18 Test Suites (`npm test`) | **18 Passed / 0 Failed** | ✅ **PASSED** |
+| **Theme Verification Suite** | Dark/Light Modes, Persistence, Early Flash Prevention, Tokens (`themeVerification.test.js`) | **Passed / 0 Failed** | ✅ **PASSED** |
 | **Phase 6 Stability & Blank Screen** | WebGL lifecycle, unmount cleanup, ErrorBoundary isolation (`phase6StabilityAndBlankScreen.test.js`) | **Passed / 0 Failed** | ✅ **PASSED** |
 | **Targeted Visual & 3D Suite**| Content, Hero Illustration, Workflow, 4 3D Archetypes (`phase8VisualAnd3DVerification.test.js`) | **Passed / 0 Failed** | ✅ **PASSED** |
 | **Prototype Contract Suite** | 17 Components & 9 Actions Verified (`prototypeContract.test.js`) | **Passed / 0 Failed** | ✅ **PASSED** |
@@ -308,7 +310,7 @@ Frontend Production Build (Vite 8):
 - **Backend Codebase (`backend/src`)**:
   - Reads `GEMINI_API_KEY` exclusively from environment variables (`${GEMINI_API_KEY:}`).
   - Reads `MONGODB_URI` exclusively from environment variables (`${MONGODB_URI:...}`).
-  - Dynamic `PORT` configuration (`${PORT:8080}`) for Railway cloud compatibility.
+  - Dynamic `PORT` configuration (`${PORT:8080}`) for Render / cloud container compatibility.
 - **Repository Safety**:
   - `.env` and secret files excluded by `.gitignore`.
   - Only sanitized `.env.example` committed.

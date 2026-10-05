@@ -66,13 +66,13 @@ On your project dashboard:
 
 ### Step 3: Explore the Simple View Dashboard
 The default Simple View organizes your engineering plan cleanly:
-1. **Top Metrics Bar:** Displays Project Type badge, estimated duration, recommended team size, estimated cost range, feature count, and Plan Check status.
+1. **Top Metrics Bar:** Displays Project Type badge, estimated duration, recommended team size, feature count, and Plan Check status.
 2. **Project Summary:** What is being built, problem statement, target users, and key goals.
 3. **Software Plan (if applicable):**
    - Recommended tech stack with alternatives and trade-offs.
    - Database collections, backend APIs, and screen flow previews.
 4. **Hardware Plan (if applicable):**
-   - Working principle and Bill of Materials (BOM) cost table.
+   - Working principle and Bill of Materials (BOM) components table.
    - Power budget and pin connection schedules.
    - **Circuit Wiring Diagram:** Interactive color-coded wiring diagram showing VCC (Red), GND (Slate), I2C (Amber), SPI (Purple), and GPIO lines.
 5. **Interactive Prototype Preview:**

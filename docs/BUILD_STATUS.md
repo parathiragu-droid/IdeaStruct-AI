@@ -1301,10 +1301,10 @@ IdeaStruct AI was extended from a software-only planner to an enterprise-grade e
 - Prepared Atlas cluster configuration, network access rules (`0.0.0.0/0`), and SRV connection strings.
 - Backend `application.properties` updated to consume `MONGODB_URI` environment variable with local fallback.
 
-#### PHASE 8D: Backend Railway Production Configuration
+#### PHASE 8D: Backend Production Configuration (Render / Historical Railway)
 - Dynamic port binding configured via `server.port=${PORT:8080}` in `application.properties`.
-- Multi-stage production `backend/Dockerfile` with non-root security user created.
-- `backend/railway.json` schema and healthcheck configuration created.
+- Multi-stage production `backend/Dockerfile` with non-root security user created for Render / container deployment.
+- `backend/railway.json` schema and healthcheck configuration created (historical preparation).
 
 #### PHASE 8E: Production CORS Configuration
 - `WebConfig.java` updated to dynamically read allowed origins from `FRONTEND_URL` and `cors.allowed-origins` while preserving local dev origins (`http://localhost:5173`, `http://127.0.0.1:5173`). No unrestricted wildcards.
@@ -1314,5 +1314,5 @@ IdeaStruct AI was extended from a software-only planner to an enterprise-grade e
 - `frontend/vercel.json` created with wildcard SPA rewrites to `/index.html` preventing 404s on page refresh.
 
 #### PHASE 8S: Deployment Documentation
-- `docs/DEPLOYMENT.md` created with step-by-step setup guide for Atlas, Railway, and Vercel.
+- `docs/DEPLOYMENT.md` updated with step-by-step setup guide for Atlas, Render, and Vercel.
 - `.env.example` updated with production variable templates.

@@ -1,8 +1,10 @@
 import { Link, useLocation } from 'react-router-dom';
 import logoSrc from '../../assets/brand/ideastruct-ai-logo.png';
+import { useTheme } from '../../utils/themeContext';
 
 export default function Navbar() {
   const location = useLocation();
+  const { theme, toggleTheme } = useTheme();
 
   const isActive = (path) => {
     if (path === '/') {
@@ -16,14 +18,14 @@ export default function Navbar() {
 
   return (
     <header style={{
-      backgroundColor: 'rgba(13, 28, 43, 0.85)',
+      backgroundColor: 'var(--bg-navbar, rgba(13, 28, 43, 0.85))',
       backdropFilter: 'blur(12px)',
       WebkitBackdropFilter: 'blur(12px)',
       borderBottom: '1px solid var(--border-default)',
       position: 'sticky',
       top: 0,
       zIndex: 50,
-      boxShadow: '0 4px 20px rgba(0, 0, 0, 0.4)'
+      boxShadow: 'var(--navbar-shadow, 0 4px 20px rgba(0, 0, 0, 0.4))'
     }}>
       <div className="container" style={{
         display: 'flex',
@@ -91,8 +93,8 @@ export default function Navbar() {
                 padding: '0.45rem 0.875rem',
                 borderRadius: 'var(--radius-sm)',
                 color: isActive('/') ? 'var(--accent-cyan)' : 'var(--text-secondary)',
-                backgroundColor: isActive('/') ? 'rgba(22, 217, 227, 0.12)' : 'transparent',
-                border: isActive('/') ? '1px solid rgba(22, 217, 227, 0.3)' : '1px solid transparent',
+                backgroundColor: isActive('/') ? 'var(--accent-aqua-light)' : 'transparent',
+                border: isActive('/') ? '1px solid var(--accent-aqua-border)' : '1px solid transparent',
                 fontWeight: isActive('/') ? 700 : 500,
                 transition: 'all 0.15s ease'
               }}
@@ -107,8 +109,8 @@ export default function Navbar() {
                 padding: '0.45rem 0.875rem',
                 borderRadius: 'var(--radius-sm)',
                 color: isActive('/projects') ? 'var(--accent-cyan)' : 'var(--text-secondary)',
-                backgroundColor: isActive('/projects') ? 'rgba(22, 217, 227, 0.12)' : 'transparent',
-                border: isActive('/projects') ? '1px solid rgba(22, 217, 227, 0.3)' : '1px solid transparent',
+                backgroundColor: isActive('/projects') ? 'var(--accent-aqua-light)' : 'transparent',
+                border: isActive('/projects') ? '1px solid var(--accent-aqua-border)' : '1px solid transparent',
                 fontWeight: isActive('/projects') ? 700 : 500,
                 transition: 'all 0.15s ease'
               }}
@@ -123,8 +125,8 @@ export default function Navbar() {
                 padding: '0.45rem 0.875rem',
                 borderRadius: 'var(--radius-sm)',
                 color: isActive('/health') ? 'var(--accent-cyan)' : 'var(--text-secondary)',
-                backgroundColor: isActive('/health') ? 'rgba(22, 217, 227, 0.12)' : 'transparent',
-                border: isActive('/health') ? '1px solid rgba(22, 217, 227, 0.3)' : '1px solid transparent',
+                backgroundColor: isActive('/health') ? 'var(--accent-aqua-light)' : 'transparent',
+                border: isActive('/health') ? '1px solid var(--accent-aqua-border)' : '1px solid transparent',
                 fontWeight: isActive('/health') ? 700 : 500,
                 transition: 'all 0.15s ease'
               }}
@@ -134,8 +136,39 @@ export default function Navbar() {
           </nav>
         </div>
 
-        {/* Action Button */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        {/* Action Buttons & Theme Toggle */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
+          {/* Theme Toggle Button */}
+          <button
+            type="button"
+            id="theme-toggle-btn"
+            onClick={toggleTheme}
+            aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            title={theme === 'dark' ? 'Switch to Light mode' : 'Switch to Dark mode'}
+            className="btn btn-secondary theme-toggle-btn"
+            style={{
+              padding: '0.45rem 0.75rem',
+              fontSize: '0.875rem',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.35rem',
+              borderRadius: 'var(--radius-md)',
+              border: '1px solid var(--border-default)',
+              backgroundColor: 'var(--bg-card)',
+              color: 'var(--text-primary)',
+              cursor: 'pointer',
+              fontWeight: 600,
+              transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+            }}
+          >
+            <span aria-hidden="true" style={{ fontSize: '0.95rem', lineHeight: 1 }}>
+              {theme === 'dark' ? '☀️' : '🌙'}
+            </span>
+            <span className="theme-toggle-label" style={{ fontSize: '0.8125rem' }}>
+              {theme === 'dark' ? 'Light' : 'Dark'}
+            </span>
+          </button>
+
           <Link
             to="/projects/new"
             className="btn btn-primary"

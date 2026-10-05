@@ -189,10 +189,11 @@ node scripts/verification/verify_e2e_journeys.js
 
 ## 9. PRODUCTION DEPLOYMENT
 
-IdeaStruct AI is architected for production deployment on:
-- **Frontend**: [Vercel](https://vercel.com/) (React + Vite SPA with client-side routing)
-- **Backend**: [Railway](https://railway.com/) (Spring Boot 3.4.3 Docker container with dynamic `$PORT`)
+IdeaStruct AI is live in production on:
+- **Frontend**: [Vercel](https://idea-struct-ai.vercel.app) (`https://idea-struct-ai.vercel.app`) (React + Vite SPA with client-side routing)
+- **Backend**: [Render](https://ideastruct-api.onrender.com) (`https://ideastruct-api.onrender.com`) (Spring Boot 3.4.3 Docker container with dynamic `$PORT`)
 - **Database**: [MongoDB Atlas](https://cloud.mongodb.com/) (Cloud M0+ replica set)
+- **Repository**: [GitHub](https://github.com/parathiragu-droid/IdeaStruct-AI) (`parathiragu-droid/IdeaStruct-AI`)
 - **AI Provider**: Google Gemini API via backend proxy only
 
 For step-by-step setup, environment variable configuration, and deployment procedures, see:
@@ -202,7 +203,7 @@ For step-by-step setup, environment variable configuration, and deployment proce
 
 ## 10. DOCUMENTATION INDEX
 
-- [`docs/DEPLOYMENT.md`](./docs/DEPLOYMENT.md): Production deployment guide for Vercel, Railway, and MongoDB Atlas.
+- [`docs/DEPLOYMENT.md`](./docs/DEPLOYMENT.md): Production deployment guide for Vercel, Render, and MongoDB Atlas.
 - [`docs/USER_GUIDE.md`](./docs/USER_GUIDE.md): Complete guide for Software, Hardware, and Hybrid planning.
 - [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md): System architecture, 3D viewer, wiring engine, and validation rules.
 - [`docs/PROJECT_CONTEXT.md`](./docs/PROJECT_CONTEXT.md): Pinned versions, canonical schema, and boundary guidelines.

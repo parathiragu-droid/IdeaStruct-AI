@@ -116,7 +116,11 @@ public class ProjectService {
     public void deleteProject(String id, Long headerRevision) {
         Project project = getProjectById(id);
 
-        if (headerRevision != null && project.getRevision() != headerRevision) {
+        if (headerRevision == null) {
+            throw new BadRequestException("Expected revision must be specified via If-Match header or revision parameter.");
+        }
+
+        if (project.getRevision() != headerRevision) {
             throw new ConflictException(
                     String.format("Cannot delete: project revision is %d, expected %d.",
                             project.getRevision(), headerRevision),

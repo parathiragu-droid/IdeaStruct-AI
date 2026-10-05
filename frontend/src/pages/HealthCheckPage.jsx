@@ -74,7 +74,7 @@ export default function HealthCheckPage() {
                 System Connectivity Status
               </h2>
               <p style={{ fontSize: '0.8125rem', color: 'var(--text-muted)', margin: '0.25rem 0 0' }}>
-                Live probe of Spring Boot backend and local MongoDB database
+                Live probe of Spring Boot backend and MongoDB database
               </p>
             </div>
             <button
@@ -101,7 +101,7 @@ export default function HealthCheckPage() {
             }}>
               <strong>Connection Error:</strong> {error}
               <div style={{ marginTop: '0.375rem', fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>
-                Unable to connect to IdeaStruct AI backend service on <code>http://localhost:8080</code>.
+                Unable to connect to the configured IdeaStruct AI backend service.
               </div>
             </div>
           )}
@@ -134,7 +134,7 @@ export default function HealthCheckPage() {
                 Spring Boot Application Server
               </p>
               <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0 }}>
-                {healthData ? 'Responding normally on port 8080' : (error ? 'Server unreachable' : 'Checking status...')}
+                {healthData ? 'Responding normally' : (error ? 'Server unreachable' : 'Checking status...')}
               </p>
             </div>
 

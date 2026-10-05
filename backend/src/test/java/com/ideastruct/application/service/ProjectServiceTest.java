@@ -113,6 +113,33 @@ class ProjectServiceTest {
     }
 
     @Test
+    @DisplayName("Delete project throws BadRequestException when revision is missing")
+    void shouldThrowBadRequestOnDeleteMissingRevision() {
+        Project existing = new Project("Old Title", "A valid idea description that is long enough to satisfy fifty characters constraint.");
+        existing.setId("proj-1");
+        existing.setRevision(3L);
+
+        when(projectRepository.findById("proj-1")).thenReturn(Optional.of(existing));
+
+        BadRequestException ex = assertThrows(BadRequestException.class, () -> projectService.deleteProject("proj-1", null));
+        assertTrue(ex.getMessage().contains("Expected revision must be specified"));
+        verify(projectRepository, never()).delete(any(Project.class));
+    }
+
+    @Test
+    @DisplayName("Delete project succeeds when revision matches")
+    void shouldDeleteProjectWhenRevisionMatches() {
+        Project existing = new Project("Old Title", "A valid idea description that is long enough to satisfy fifty characters constraint.");
+        existing.setId("proj-1");
+        existing.setRevision(3L);
+
+        when(projectRepository.findById("proj-1")).thenReturn(Optional.of(existing));
+
+        projectService.deleteProject("proj-1", 3L);
+        verify(projectRepository, times(1)).delete(existing);
+    }
+
+    @Test
     @DisplayName("Create project supports all 4 override modes: AUTO, SOFTWARE, HARDWARE, HYBRID")
     void shouldSupportAllFourOverrideModes() {
         String title = "Override Test Project";

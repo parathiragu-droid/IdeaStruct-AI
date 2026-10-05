@@ -10,6 +10,7 @@ $excludeArgs = @(
     '--exclude=.idea',
     '--exclude=.vscode',
     '--exclude=.git',
+    '--exclude=.playwright-mcp',
     '--exclude=*.zip',
     '--exclude=*.env'
 )
