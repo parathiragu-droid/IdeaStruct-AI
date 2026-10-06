@@ -1,0 +1,58 @@
+{
+  "audit": {
+    "consoleErrors": [
+      "[Live AI Generation Error] ApiError: Request timed out. Please check backend connection.\n    at ai (https://idea-struct-ai.vercel.app/assets/index-CQfoF4jQ.js:12:51204)\n    at async de (https://idea-struct-ai.vercel.app/assets/index-CQfoF4jQ.js:4304:177388)"
+    ],
+    "pageErrors": [],
+    "networkErrors": [
+      "POST https://ideastruct-api.onrender.com/api/projects/6ac473d28a56ae4e3a663d13/generate (net::ERR_ABORTED)"
+    ],
+    "corsErrors": [],
+    "webglErrors": [],
+    "createdProjects": [
+      {
+        "id": "6ac473ae8a56ae4e3a663d12",
+        "revision": 1
+      },
+      {
+        "id": "6ac473d28a56ae4e3a663d13",
+        "revision": 1
+      }
+    ]
+  },
+  "reportData": {
+    "backendHealth": "PASS",
+    "mongoStatus": "UP",
+    "geminiStatus": "UP",
+    "software": {
+      "status": "PASS",
+      "roadmap": "FAIL",
+      "prototype": "FAIL",
+      "persisted": true
+    },
+    "hardware": {
+      "status": "FAIL",
+      "roadmap": "FAIL",
+      "wiring": "FAIL",
+      "threed": "FAIL",
+      "persisted": false
+    },
+    "hybrid": {
+      "status": "FAIL",
+      "integration": "FAIL",
+      "prototype": "FAIL",
+      "wiring": "FAIL",
+      "threed": "FAIL",
+      "persisted": false
+    },
+    "theme": {
+      "darkMode": "PASS",
+      "lightMode": "PASS",
+      "persistence": "PASS"
+    },
+    "responsive": {
+      "desktop": "PASS",
+      "mobile": "PASS"
+    }
+  }
+}
