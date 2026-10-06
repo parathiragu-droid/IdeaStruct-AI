@@ -1,0 +1,81 @@
+{
+  "audit": {
+    "consoleErrors": [],
+    "pageErrors": [],
+    "networkErrors": [],
+    "corsErrors": [],
+    "webglErrors": [],
+    "blankScreens": 0,
+    "routesVerified": [
+      "Home",
+      "My Projects",
+      "New Project",
+      "System Status",
+      "Software Project Detail (Simple View)",
+      "Software Tab: overview",
+      "Software Tab: requirements",
+      "Software Tab: features",
+      "Software Tab: roles",
+      "Software Tab: estimates",
+      "Software Tab: roadmap",
+      "Software Tab: apis",
+      "Software Tab: screens",
+      "Software Tab: prototype",
+      "Hardware Project Detail (Simple View)",
+      "Hardware Tab: components",
+      "Hardware Tab: connections",
+      "Hardware Tab: firmware",
+      "Hardware Tab: threedmodel",
+      "Hybrid Project Detail (Simple View)",
+      "Hybrid Tab: overview",
+      "Hybrid Tab: roadmap",
+      "Hybrid Tab: apis",
+      "Hybrid Tab: prototype",
+      "Hybrid Tab: components",
+      "Hybrid Tab: connections",
+      "Hybrid Tab: threedmodel",
+      "Hard-refreshed Home"
+    ],
+    "tabsVerified": [
+      "SW:overview",
+      "SW:requirements",
+      "SW:features",
+      "SW:roles",
+      "SW:estimates",
+      "SW:roadmap",
+      "SW:apis",
+      "SW:screens",
+      "SW:prototype",
+      "HW:components",
+      "HW:connections",
+      "HW:firmware",
+      "HW:threedmodel",
+      "HY:overview",
+      "HY:roadmap",
+      "HY:apis",
+      "HY:prototype",
+      "HY:components",
+      "HY:connections",
+      "HY:threedmodel"
+    ]
+  },
+  "results": {
+    "backendHealth": "PASS",
+    "home": "PASS",
+    "projects": "PASS",
+    "newProject": "PASS",
+    "systemStatus": "PASS",
+    "softwareProject": "PASS",
+    "hardwareProject": "PASS",
+    "hybridProject": "PASS",
+    "theme": {
+      "dark": "PASS",
+      "light": "PASS",
+      "persistence": "PASS"
+    },
+    "responsive": {
+      "desktop": "PASS",
+      "mobile": "PASS"
+    }
+  }
+}
